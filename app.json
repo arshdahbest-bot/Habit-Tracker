@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "IB Study Buddy",
+    "slug": "ib-study-buddy",
+    "scheme": "ibstudybuddy",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourname.ibstudybuddy",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "IB Study Buddy uses your photo to create your personal tutor avatar.",
+        "NSCameraUsageDescription": "IB Study Buddy uses your camera to take a photo for your tutor avatar."
+      }
+    },
+    "android": {
+      "package": "com.yourname.ibstudybuddy"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "IB Study Buddy uses your photo to create your personal tutor avatar.",
+          "cameraPermission": "IB Study Buddy uses your camera to take a photo for your tutor avatar."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}
