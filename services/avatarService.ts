@@ -10,8 +10,12 @@
 
 const AVATAR_API_URL = process.env.EXPO_PUBLIC_AVATAR_API_URL;
 
-export const AVATAR_TINTS = ['#4F46E5', '#EC4899', '#0EA5E9', '#16A34A', '#F59E0B', '#8B5CF6'];
-export const AVATAR_HATS = ['🎓', '👑', '🧢', '🎩', '⭐', '🌸'];
+export const AVATAR_TINTS = [
+  '#4F46E5', '#2563EB', '#0EA5E9', '#14B8A6', '#16A34A', '#84CC16',
+  '#F59E0B', '#F97316', '#EF4444', '#EC4899', '#8B5CF6', '#64748B',
+];
+// '' = no accessory
+export const AVATAR_HATS = ['🎓', '👑', '🧢', '🎩', '⭐', '🌸', '🎧', '🕶️', '🔬', '📚', '🚀', '⚡', ''];
 
 export function isAiAvatarEnabled() {
   return !!AVATAR_API_URL;

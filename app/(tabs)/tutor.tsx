@@ -1,6 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import * as Speech from 'expo-speech';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import Avatar from '../../components/Avatar';
 import Diagram from '../../components/econ/Diagram';
@@ -9,6 +8,7 @@ import { Body, Button, Card, Muted, Screen, SubjectPicker, Title } from '../../c
 import { useApp } from '../../context/AppContext';
 import { getSubject, Lesson } from '../../data/subjects';
 import { getProgress, recordLesson } from '../../services/progress';
+import { useSpeaker } from '../../services/useSpeaker';
 
 export default function TutorScreen() {
   const { colors, profile } = useApp();
@@ -16,9 +16,8 @@ export default function TutorScreen() {
   const [subjectId, setSubjectId] = useState(getSubject(params.subject).id);
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [step, setStep] = useState(0);
-  const [speaking, setSpeaking] = useState(false);
   const [voiceOn, setVoiceOn] = useState(true);
-  const speakId = useRef(0);
+  const { speaking, say, stop } = useSpeaker();
 
   const subject = getSubject(subjectId);
 
@@ -30,33 +29,10 @@ export default function TutorScreen() {
     }
   }, [params.subject]);
 
-  const stop = useCallback(() => {
-    speakId.current++;
-    Speech.stop();
-    setSpeaking(false);
-  }, []);
-
-  const say = useCallback(
-    (text: string) => {
-      stop();
-      if (!voiceOn) return;
-      const id = ++speakId.current;
-      setSpeaking(true);
-      const done = () => {
-        if (speakId.current === id) setSpeaking(false);
-      };
-      Speech.speak(text, { rate: 0.95, onDone: done, onStopped: done, onError: done });
-    },
-    [stop, voiceOn],
-  );
-
   // Speak each step as it appears.
   useEffect(() => {
-    if (lesson) say(lesson.steps[step]);
+    if (lesson && voiceOn) say(lesson.steps[step]);
   }, [lesson, step]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Stop talking when leaving the screen / unmounting.
-  useEffect(() => stop, [stop]);
 
   // Reaching the last step counts as completing the lesson.
   const [done, setDone] = useState<Record<string, string>>({});
@@ -83,7 +59,7 @@ export default function TutorScreen() {
         <Card style={{ alignItems: 'center' }}>
           <Avatar size={110} />
           <Body style={{ textAlign: 'center', marginTop: 8 }}>
-            {`Hey${profile.name ? ' ' + profile.name : ''}! Ready to learn ${subject.name}? Choose a lesson below.`}
+            {`Hey${profile.name ? ' ' + profile.name : ''}! I'm ${profile.tutorName || 'your tutor'}. Ready to learn ${subject.name}? Choose a lesson below.`}
           </Body>
         </Card>
         {subject.lessons.map((l, i) => (
@@ -174,7 +150,7 @@ export default function TutorScreen() {
       </View>
 
       <View style={styles.voiceRow}>
-        <Muted>Avatar voice</Muted>
+        <Muted>Read each step aloud</Muted>
         <Switch
           value={voiceOn}
           onValueChange={(v) => {

@@ -51,7 +51,10 @@ export default function Avatar({ size = 120, speaking = false }: Props) {
   const tint = profile.avatarStyle.hue;
   const translateY = bob.interpolate({ inputRange: [0, 1], outputRange: [0, -6] });
   const imageUri = profile.avatarUri ?? profile.photoUri;
-  const ring = Math.max(4, Math.round(size * 0.05));
+  const style = profile.avatarStyle;
+  const ring = Math.max(style.ring === 'thin' ? 2 : 4, Math.round(size * (style.ring === 'thin' ? 0.02 : 0.05)));
+  const radius = style.shape === 'circle' ? size / 2 : style.shape === 'rounded' ? size * 0.28 : size * 0.1;
+  const wash = [0, 0.12, 0.22, 0.35][style.filter] ?? 0.22;
 
   return (
     <View style={{ alignItems: 'center' }}>
@@ -59,24 +62,24 @@ export default function Avatar({ size = 120, speaking = false }: Props) {
         <View
           style={[
             styles.ring,
-            { width: size, height: size, borderRadius: size / 2, borderColor: tint, borderWidth: ring, backgroundColor: colors.cardAlt },
+            { width: size, height: size, borderRadius: radius, borderColor: tint, borderWidth: ring, backgroundColor: colors.cardAlt },
           ]}
         >
           {imageUri ? (
             <>
               <Image source={{ uri: imageUri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
-              {!profile.avatarUri && (
+              {!profile.avatarUri && wash > 0 && (
                 // Cartoon-style colour wash on top of the raw photo.
-                <View style={[StyleSheet.absoluteFill, { backgroundColor: tint, opacity: 0.22 }]} />
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: tint, opacity: wash }]} />
               )}
             </>
           ) : (
             <Text style={{ fontSize: size * 0.5 }}>😄</Text>
           )}
         </View>
-        <Text style={[styles.hat, { fontSize: size * 0.32, top: -size * 0.16, right: -size * 0.02 }]}>
-          {profile.avatarStyle.hat}
-        </Text>
+        {style.hat ? (
+          <Text style={[styles.hat, { fontSize: size * 0.32, top: -size * 0.16, right: -size * 0.02 }]}>{style.hat}</Text>
+        ) : null}
       </Animated.View>
       <View style={[styles.voice, { opacity: speaking ? 1 : 0 }]}>
         {bars.map((b, i) => (

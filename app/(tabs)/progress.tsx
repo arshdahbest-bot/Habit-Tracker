@@ -1,7 +1,7 @@
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { LayoutChangeEvent, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import Svg, { Line, Path, Rect, Text as SvgText } from 'react-native-svg';
+import Svg, { G, Line, Rect, Text as SvgText } from 'react-native-svg';
 import { Body, Card, Muted, Screen, Title } from '../../components/UI';
 import { useApp } from '../../context/AppContext';
 import { SUBJECTS } from '../../data/subjects';
@@ -152,12 +152,11 @@ function ActivityChart({ days }: { days: { day: string; label: string; count: nu
             return (
               <React.Fragment key={d.day}>
                 {h > 0 && (
-                  // bar with 4px rounded top, square at the baseline
-                  <Path
-                    d={`M${x},${baseY} V${baseY - h + r} Q${x},${baseY - h} ${x + r},${baseY - h} H${x + barW - r} Q${x + barW},${baseY - h} ${x + barW},${baseY - h + r} V${baseY} Z`}
-                    fill={colors.primary}
-                    opacity={isSel ? 1 : 0.55}
-                  />
+                  // bar with a 4px rounded top and a square base on the baseline
+                  <G opacity={isSel ? 1 : 0.55}>
+                    <Rect x={x} y={baseY - h} width={barW} height={h} rx={r} ry={r} fill={colors.primary} />
+                    <Rect x={x} y={baseY - Math.min(h, r)} width={barW} height={Math.min(h, r)} fill={colors.primary} />
+                  </G>
                 )}
                 {isSel && (
                   <SvgText fontFamily={FONT} x={x + barW / 2} y={baseY - h - 6} fill={colors.text} fontSize={12} fontWeight="700" textAnchor="middle">
@@ -175,12 +174,23 @@ function ActivityChart({ days }: { days: { day: string; label: string; count: nu
                 >
                   {d.label}
                 </SvgText>
-                {/* hit target bigger than the bar */}
-                <Rect x={i * slot} y={0} width={slot} height={CHART_H} fill="transparent" onPress={() => setSelected(i)} />
               </React.Fragment>
             );
           })}
         </Svg>
+      )}
+      {/* tap targets: one full-height column per day, bigger than the bar itself */}
+      {width > 0 && (
+        <View style={[StyleSheet.absoluteFill, { flexDirection: 'row', height: CHART_H }]}>
+          {days.map((d, i) => (
+            <Pressable
+              key={d.day}
+              style={{ flex: 1 }}
+              onPress={() => setSelected(i)}
+              accessibilityLabel={`${d.label}: ${d.count} activities`}
+            />
+          ))}
+        </View>
       )}
       <Pressable onPress={() => setSelected(days.length - 1)}>
         <Muted style={{ textAlign: 'center', marginTop: 4 }}>

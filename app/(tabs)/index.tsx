@@ -6,7 +6,7 @@ import Avatar from '../../components/Avatar';
 import { Body, Button, Card, Muted, Screen, Title } from '../../components/UI';
 import { useApp } from '../../context/AppContext';
 import { SUBJECTS } from '../../data/subjects';
-import { AVATAR_HATS, AVATAR_TINTS, generateAiAvatar, isAiAvatarEnabled } from '../../services/avatarService';
+import { generateAiAvatar, isAiAvatarEnabled } from '../../services/avatarService';
 
 export default function HomeScreen() {
   const { colors, mode, toggleTheme, profile, updateProfile } = useApp();
@@ -74,7 +74,7 @@ export default function HomeScreen() {
           {profile.photoUri
             ? busy
               ? 'Creating your AI avatar…'
-              : 'Looking good! Customise the colour and hat below.'
+              : `Meet ${profile.tutorName || 'your tutor'}! Customize the look and voice below.`
             : 'Add your picture and it becomes the avatar that teaches you.'}
         </Muted>
 
@@ -91,35 +91,12 @@ export default function HomeScreen() {
           <Button title="🖼️ Choose photo" onPress={() => pickPhoto(false)} style={{ flex: 1 }} />
         </View>
 
-        <Muted style={{ alignSelf: 'flex-start', marginTop: 12, marginBottom: 6 }}>Avatar colour</Muted>
-        <View style={styles.swatches}>
-          {AVATAR_TINTS.map((c) => (
-            <Pressable
-              key={c}
-              onPress={() => updateProfile({ avatarStyle: { ...profile.avatarStyle, hue: c } })}
-              style={[
-                styles.swatch,
-                { backgroundColor: c, borderColor: profile.avatarStyle.hue === c ? colors.text : 'transparent' },
-              ]}
-              accessibilityLabel={`Colour ${c}`}
-            />
-          ))}
-        </View>
-        <Muted style={{ alignSelf: 'flex-start', marginTop: 12, marginBottom: 6 }}>Hat</Muted>
-        <View style={styles.swatches}>
-          {AVATAR_HATS.map((h) => (
-            <Pressable
-              key={h}
-              onPress={() => updateProfile({ avatarStyle: { ...profile.avatarStyle, hat: h } })}
-              style={[
-                styles.hat,
-                { borderColor: profile.avatarStyle.hat === h ? colors.primary : colors.border, backgroundColor: colors.cardAlt },
-              ]}
-            >
-              <Text style={{ fontSize: 22 }}>{h}</Text>
-            </Pressable>
-          ))}
-        </View>
+        <Button
+          title="🎨 Customize avatar, voice & colours"
+          variant="secondary"
+          onPress={() => router.push('/customize')}
+          style={{ marginTop: 10, alignSelf: 'stretch' }}
+        />
       </Card>
 
       <Text style={[styles.section, { color: colors.text }]}>What do you want to study?</Text>
@@ -159,9 +136,6 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 18, fontWeight: '700' },
   input: { width: '100%', borderWidth: 1, borderRadius: 12, padding: 12, fontSize: 16, marginBottom: 12 },
   row: { flexDirection: 'row', gap: 10, width: '100%' },
-  swatches: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, alignSelf: 'flex-start' },
-  swatch: { width: 34, height: 34, borderRadius: 17, borderWidth: 3 },
-  hat: { width: 44, height: 44, borderRadius: 12, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   section: { fontSize: 20, fontWeight: '800', marginTop: 12, marginBottom: 10 },
   subject: {
     flexDirection: 'row',

@@ -16,12 +16,14 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.border },
+        tabBarLabelStyle: { fontSize: 10 },
         sceneStyle: { backgroundColor: colors.background },
       }}
     >
       <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} /> }} />
       <Tabs.Screen name="tutor" options={{ title: 'Tutor', tabBarIcon: ({ focused }) => <TabIcon emoji="🧑‍🏫" focused={focused} /> }} />
-      <Tabs.Screen name="flashcards" options={{ title: 'Flashcards', tabBarIcon: ({ focused }) => <TabIcon emoji="🃏" focused={focused} /> }} />
+      <Tabs.Screen name="ask" options={{ title: 'Ask AI', tabBarIcon: ({ focused }) => <TabIcon emoji="💬" focused={focused} /> }} />
+      <Tabs.Screen name="flashcards" options={{ title: 'Cards', tabBarIcon: ({ focused }) => <TabIcon emoji="🃏" focused={focused} /> }} />
       <Tabs.Screen name="quiz" options={{ title: 'Quiz', tabBarIcon: ({ focused }) => <TabIcon emoji="📝" focused={focused} /> }} />
       <Tabs.Screen name="progress" options={{ title: 'Progress', tabBarIcon: ({ focused }) => <TabIcon emoji="📊" focused={focused} /> }} />
       <Tabs.Screen name="break" options={{ title: 'Break', tabBarIcon: ({ focused }) => <TabIcon emoji="🎮" focused={focused} /> }} />
