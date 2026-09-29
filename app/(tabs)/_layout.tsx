@@ -1,0 +1,29 @@
+import { Tabs } from 'expo-router';
+import React from 'react';
+import { Text } from 'react-native';
+import { useApp } from '../../context/AppContext';
+
+function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
+  return <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>;
+}
+
+export default function TabsLayout() {
+  const { colors } = useApp();
+  return (
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
+        tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.border },
+        sceneStyle: { backgroundColor: colors.background },
+      }}
+    >
+      <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} /> }} />
+      <Tabs.Screen name="tutor" options={{ title: 'Tutor', tabBarIcon: ({ focused }) => <TabIcon emoji="🧑‍🏫" focused={focused} /> }} />
+      <Tabs.Screen name="flashcards" options={{ title: 'Flashcards', tabBarIcon: ({ focused }) => <TabIcon emoji="🃏" focused={focused} /> }} />
+      <Tabs.Screen name="quiz" options={{ title: 'Quiz', tabBarIcon: ({ focused }) => <TabIcon emoji="📝" focused={focused} /> }} />
+      <Tabs.Screen name="break" options={{ title: 'Break', tabBarIcon: ({ focused }) => <TabIcon emoji="🎮" focused={focused} /> }} />
+    </Tabs>
+  );
+}

@@ -1,0 +1,113 @@
+import React from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useApp } from '../context/AppContext';
+import { SUBJECTS } from '../data/subjects';
+
+export function Screen({ children, scroll = true }: { children: React.ReactNode; scroll?: boolean }) {
+  const { colors } = useApp();
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'left', 'right']}>
+      {scroll ? (
+        <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          {children}
+        </ScrollView>
+      ) : (
+        <View style={[styles.content, { flex: 1 }]}>{children}</View>
+      )}
+    </SafeAreaView>
+  );
+}
+
+export function Title({ children, subtitle }: { children: React.ReactNode; subtitle?: string }) {
+  const { colors } = useApp();
+  return (
+    <View style={{ marginBottom: 16 }}>
+      <Text style={{ fontSize: 28, fontWeight: '800', color: colors.text }}>{children}</Text>
+      {subtitle ? <Text style={{ fontSize: 15, color: colors.textMuted, marginTop: 4 }}>{subtitle}</Text> : null}
+    </View>
+  );
+}
+
+export function Card({ children, style }: { children: React.ReactNode; style?: ViewStyle }) {
+  const { colors } = useApp();
+  return (
+    <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }, style]}>{children}</View>
+  );
+}
+
+export function Button({
+  title,
+  onPress,
+  variant = 'primary',
+  disabled,
+  style,
+}: {
+  title: string;
+  onPress: () => void;
+  variant?: 'primary' | 'secondary';
+  disabled?: boolean;
+  style?: ViewStyle;
+}) {
+  const { colors } = useApp();
+  const primary = variant === 'primary';
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      disabled={disabled}
+      style={({ pressed }) => [
+        styles.button,
+        {
+          backgroundColor: primary ? colors.primary : colors.cardAlt,
+          opacity: disabled ? 0.5 : pressed ? 0.8 : 1,
+        },
+        style,
+      ]}
+    >
+      <Text style={{ color: primary ? colors.primaryText : colors.text, fontWeight: '700', fontSize: 16 }}>{title}</Text>
+    </Pressable>
+  );
+}
+
+export function Body({ children, style }: { children: React.ReactNode; style?: TextStyle }) {
+  const { colors } = useApp();
+  return <Text style={[{ color: colors.text, fontSize: 16, lineHeight: 24 }, style]}>{children}</Text>;
+}
+
+export function Muted({ children, style }: { children: React.ReactNode; style?: TextStyle }) {
+  const { colors } = useApp();
+  return <Text style={[{ color: colors.textMuted, fontSize: 14 }, style]}>{children}</Text>;
+}
+
+export function SubjectPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
+  const { colors } = useApp();
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16, flexGrow: 0 }}>
+      {SUBJECTS.map((s) => {
+        const active = s.id === value;
+        return (
+          <Pressable
+            key={s.id}
+            onPress={() => onChange(s.id)}
+            style={[
+              styles.chip,
+              { backgroundColor: active ? s.color : colors.card, borderColor: active ? s.color : colors.border },
+            ]}
+          >
+            <Text style={{ color: active ? '#fff' : colors.text, fontWeight: '600' }}>
+              {s.emoji} {s.name}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  content: { padding: 16, paddingBottom: 40 },
+  card: { borderRadius: 16, padding: 16, borderWidth: 1, marginBottom: 12 },
+  button: { paddingVertical: 14, paddingHorizontal: 18, borderRadius: 12, alignItems: 'center' },
+  chip: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: 20, borderWidth: 1, marginRight: 8 },
+});
