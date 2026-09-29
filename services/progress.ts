@@ -3,7 +3,7 @@ import { todayKey } from './dailyGame';
 
 // Everything the Progress tab shows is stored on the device under one key.
 
-export type QuizResult = { subjectId: string; score: number; total: number; day: string; at: number };
+export type QuizResult = { subjectId: string; chapterId?: string; score: number; total: number; day: string; at: number };
 
 export type ProgressData = {
   lessonsDone: Record<string, string>; // lessonId -> day completed
@@ -51,9 +51,9 @@ export function recordFlashcards(subjectId: string, mastered: number) {
   });
 }
 
-export function recordQuiz(subjectId: string, score: number, total: number) {
+export function recordQuiz(subjectId: string, score: number, total: number, chapterId?: string) {
   return update((p) => {
-    p.quizzes.push({ subjectId, score, total, day: todayKey(), at: Date.now() });
+    p.quizzes.push({ subjectId, chapterId, score, total, day: todayKey(), at: Date.now() });
     if (p.quizzes.length > 200) p.quizzes = p.quizzes.slice(-200);
   });
 }

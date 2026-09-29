@@ -1,16 +1,26 @@
 import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
-import React, { useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { Alert, Platform, Pressable, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import Avatar from '../../components/Avatar';
-import { Body, Button, Card, Muted, Screen, Title } from '../../components/UI';
+import { Badge, Body, Button, Card, Muted, Screen, Title } from '../../components/UI';
 import { useApp } from '../../context/AppContext';
-import { SUBJECTS } from '../../data/subjects';
+import { chaptersFor } from '../../data/subjects';
+import { chapterStudied } from '../../services/chapters';
+import { useMySubjects } from '../../services/mySubjects';
+import { getProgress, ProgressData } from '../../services/progress';
 import { generateAiAvatar, isAiAvatarEnabled } from '../../services/avatarService';
 
 export default function HomeScreen() {
   const { colors, mode, toggleTheme, profile, updateProfile } = useApp();
   const [busy, setBusy] = useState(false);
+  const { list, chosen } = useMySubjects();
+  const [progress, setProgress] = useState<ProgressData | null>(null);
+  useFocusEffect(
+    useCallback(() => {
+      getProgress().then(setProgress);
+    }, []),
+  );
 
   async function pickPhoto(fromCamera: boolean) {
     try {
@@ -99,26 +109,47 @@ export default function HomeScreen() {
         />
       </Card>
 
-      <Text style={[styles.section, { color: colors.text }]}>What do you want to study?</Text>
-      {SUBJECTS.map((s) => (
-        <Pressable
-          key={s.id}
-          onPress={() => router.push({ pathname: '/tutor', params: { subject: s.id } })}
-          style={({ pressed }) => [
-            styles.subject,
-            { backgroundColor: colors.card, borderColor: colors.border, borderLeftColor: s.color, opacity: pressed ? 0.8 : 1 },
-          ]}
-        >
-          <Text style={{ fontSize: 28 }}>{s.emoji}</Text>
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <Body style={{ fontWeight: '700' }}>{s.name}</Body>
-            <Muted>
-              {s.group} · {s.lessons.length} lessons · {s.flashcards.length} cards
-            </Muted>
-          </View>
-          <Text style={{ color: colors.textMuted, fontSize: 20 }}>›</Text>
+      <View style={styles.sectionRow}>
+        <Text style={[styles.section, { color: colors.text }]}>{chosen ? 'My IB subjects' : 'IB subjects'}</Text>
+        <Pressable onPress={() => router.push('/subjects')} hitSlop={8}>
+          <Text style={{ color: colors.primary, fontWeight: '700' }}>{chosen ? 'Edit' : 'Choose mine'}</Text>
         </Pressable>
-      ))}
+      </View>
+      {!chosen && (
+        <Card style={{ backgroundColor: colors.cardAlt }}>
+          <Body style={{ fontWeight: '700' }}>🎯 Set up your Diploma</Body>
+          <Muted style={{ marginTop: 4 }}>
+            Choose your 6 subjects and whether each is SL or HL. SL hides HL-only chapters, and your tutor pitches lessons at your level.
+          </Muted>
+          <Button title="Choose my subjects" onPress={() => router.push('/subjects')} style={{ marginTop: 10 }} />
+        </Card>
+      )}
+      {list.map(({ subject: s, level, levelLabel }) => {
+        const chapters = chaptersFor(s, level).flatMap((u) => u.chapters);
+        const done = chapters.filter((c) => chapterStudied(progress, s, c.id)).length;
+        return (
+          <Pressable
+            key={s.id}
+            onPress={() => router.push({ pathname: '/tutor', params: { subject: s.id } })}
+            style={({ pressed }) => [
+              styles.subject,
+              { backgroundColor: colors.card, borderColor: colors.border, borderLeftColor: s.color, opacity: pressed ? 0.8 : 1 },
+            ]}
+          >
+            <Text style={{ fontSize: 28 }}>{s.emoji}</Text>
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Body style={{ fontWeight: '700', flexShrink: 1 }}>{s.name}</Body>
+                {chosen && levelLabel ? <Badge text={levelLabel} color={s.color} /> : null}
+              </View>
+              <Muted>
+                {chapters.length} chapters · {done} studied
+              </Muted>
+            </View>
+            <Text style={{ color: colors.textMuted, fontSize: 20 }}>›</Text>
+          </Pressable>
+        );
+      })}
 
       <Card style={{ marginTop: 8, backgroundColor: colors.cardAlt }}>
         <Body style={{ fontWeight: '700' }}>🎮 Need a break?</Body>
@@ -136,7 +167,8 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 18, fontWeight: '700' },
   input: { width: '100%', borderWidth: 1, borderRadius: 12, padding: 12, fontSize: 16, marginBottom: 12 },
   row: { flexDirection: 'row', gap: 10, width: '100%' },
-  section: { fontSize: 20, fontWeight: '800', marginTop: 12, marginBottom: 10 },
+  section: { fontSize: 20, fontWeight: '800' },
+  sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, marginBottom: 10 },
   subject: {
     flexDirection: 'row',
     alignItems: 'center',

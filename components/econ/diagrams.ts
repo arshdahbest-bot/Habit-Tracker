@@ -10,6 +10,8 @@ export type DiagramId =
   | 'equilibrium'
   | 'surplus'
   | 'ped'
+  | 'ped-extremes'
+  | 'ped-linear'
   | 'revenue'
   | 'externality';
 
@@ -127,29 +129,77 @@ export function buildDiagram(id: DiagramId, c: Palette): GraphSpec[] {
       ];
     }
     case 'ped': {
-      // A price rise on each: flat demand reacts a lot, steep demand barely moves.
-      const eA = 6;
-      const eM = -0.3;
-      const iA = 10;
-      const iM = -2;
+      // Same starting point (P₁ = 4, Q₁ = 6) and the same 37.5% price rise on both curves,
+      // so the only difference is how responsive quantity demanded is.
+      const p1 = 4;
+      const p2 = 5.5;
+      const q1 = 6;
+      const eM = -0.4;
+      const iM = -3;
+      const eA = p1 - eM * q1;
+      const iA = p1 - iM * q1;
+      const qe = qAt(eA, eM, p2);
+      const qi = qAt(iA, iM, p2);
+      const pct = (v: number) => `${v > 0 ? '+' : '−'}${Math.abs(v * 100).toFixed(1)}%`;
+      const dP = (p2 - p1) / p1;
+      const ped = (q: number) => ((q - q1) / q1 / dP).toFixed(2).replace('-', '−');
       return [
         {
-          title: 'Elastic demand (PED > 1)',
+          title: 'Elastic demand: |PED| > 1',
           lines: [curve(eA, eM, dCol, 'D')],
           guides: [
-            { at: [qAt(eA, eM, 4), 4], pLabel: 'P₁', qLabel: 'Q₁' },
-            { at: [qAt(eA, eM, 5), 5], pLabel: 'P₂', qLabel: 'Q₂' },
+            { at: [q1, p1], pLabel: 'P₁', qLabel: 'Q₁' },
+            { at: [qe, p2], pLabel: 'P₂', qLabel: 'Q₂' },
           ],
-          notes: [{ at: [6.5, 8], text: 'Small ΔP → big ΔQ' }],
+          notes: [
+            { at: [7.6, 9.2], text: `%ΔP ${pct(dP)}` },
+            { at: [7.6, 8.4], text: `%ΔQ ${pct((qe - q1) / q1)}` },
+            { at: [7.6, 7.5], text: `PED ≈ ${ped(qe)}`, bold: true },
+          ],
         },
         {
-          title: 'Inelastic demand (PED < 1)',
+          title: 'Inelastic demand: |PED| < 1',
           lines: [curve(iA, iM, dCol, 'D')],
           guides: [
-            { at: [qAt(iA, iM, 4), 4], pLabel: 'P₁', qLabel: 'Q₁' },
-            { at: [qAt(iA, iM, 6), 6], pLabel: 'P₂', qLabel: 'Q₂' },
+            { at: [q1, p1], pLabel: 'P₁', qLabel: 'Q₁', qAnchor: 'start' },
+            { at: [qi, p2], pLabel: 'P₂', qLabel: 'Q₂', qAnchor: 'end' },
           ],
-          notes: [{ at: [6.5, 8], text: 'Big ΔP → small ΔQ' }],
+          notes: [
+            { at: [7.6, 9.2], text: `%ΔP ${pct(dP)}` },
+            { at: [7.6, 8.4], text: `%ΔQ ${pct((qi - q1) / q1)}` },
+            { at: [7.6, 7.5], text: `PED ≈ ${ped(qi)}`, bold: true },
+          ],
+        },
+      ];
+    }
+    case 'ped-extremes': {
+      return [
+        {
+          title: 'Perfectly inelastic: PED = 0',
+          lines: [{ from: [5, 9.3], to: [5, 0.7], color: dCol, label: 'D' }],
+          notes: [{ at: [7.6, 6], text: 'Same Q at any price' }],
+        },
+        {
+          title: 'Perfectly elastic: PED = ∞',
+          lines: [{ from: [0.3, 5], to: [8.8, 5], color: dCol, label: 'D' }],
+          notes: [{ at: [5, 6.2], text: 'Any price rise → Qd falls to 0' }],
+        },
+      ];
+    }
+    case 'ped-linear': {
+      const a = 9;
+      const m = -0.9;
+      const mid: Pt = [5, 4.5];
+      return [
+        {
+          title: 'PED changes along a straight-line demand curve',
+          lines: [curve(a, m, dCol, 'D')],
+          guides: [{ at: mid, pLabel: 'P½', qLabel: 'Q½' }],
+          notes: [
+            { at: [4.1, 7.4], text: '|PED| > 1 (elastic)', bold: true },
+            { at: [6.9, 4.9], text: '|PED| = 1' },
+            { at: [6.2, 1.0], text: '|PED| < 1 (inelastic)', bold: true },
+          ],
         },
       ];
     }

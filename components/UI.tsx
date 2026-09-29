@@ -2,7 +2,7 @@ import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '../context/AppContext';
-import { SUBJECTS } from '../data/subjects';
+import { useMySubjects } from '../services/mySubjects';
 
 export function Screen({ children, scroll = true }: { children: React.ReactNode; scroll?: boolean }) {
   const { colors } = useApp();
@@ -82,9 +82,10 @@ export function Muted({ children, style }: { children: React.ReactNode; style?: 
 
 export function SubjectPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
   const { colors } = useApp();
+  const { list } = useMySubjects();
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16, flexGrow: 0 }}>
-      {SUBJECTS.map((s) => {
+      {list.map(({ subject: s, levelLabel }) => {
         const active = s.id === value;
         return (
           <Pressable
@@ -96,12 +97,21 @@ export function SubjectPicker({ value, onChange }: { value: string; onChange: (i
             ]}
           >
             <Text style={{ color: active ? '#fff' : colors.text, fontWeight: '600' }}>
-              {s.emoji} {s.name}
+              {s.emoji} {s.short ?? s.name}
+              {levelLabel && levelLabel !== 'SL/HL' ? ` · ${levelLabel}` : ''}
             </Text>
           </Pressable>
         );
       })}
     </ScrollView>
+  );
+}
+
+export function Badge({ text, color }: { text: string; color: string }) {
+  return (
+    <View style={{ backgroundColor: color, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, alignSelf: 'flex-start' }}>
+      <Text style={{ color: '#fff', fontSize: 11, fontWeight: '800' }}>{text}</Text>
+    </View>
   );
 }
 

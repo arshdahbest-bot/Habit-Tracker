@@ -9,7 +9,7 @@ import { useApp } from '../../context/AppContext';
 export type Pt = [number, number]; // [quantity, price]
 
 export type GraphLine = { from: Pt; to: Pt; label?: string; color: string; dashed?: boolean; faded?: boolean };
-export type Guide = { at: Pt; pLabel?: string; qLabel?: string };
+export type Guide = { at: Pt; pLabel?: string; qLabel?: string; qAnchor?: 'start' | 'middle' | 'end' };
 export type Area = { points: Pt[]; color: string };
 export type Arrow = { from: Pt; to: Pt };
 export type Note = { at: Pt; text: string; bold?: boolean };
@@ -75,7 +75,14 @@ export default function EconGraph({ spec, height = 240 }: { spec: GraphSpec; hei
                 </SvgText>
               ) : null}
               {g.qLabel ? (
-                <SvgText fontFamily={FONT} x={x(g.at[0])} y={y(0) + 14} fill={ink} fontSize={11} textAnchor="middle">
+                <SvgText
+                  fontFamily={FONT}
+                  x={x(g.at[0]) + (g.qAnchor === 'start' ? 2 : g.qAnchor === 'end' ? -2 : 0)}
+                  y={y(0) + 14}
+                  fill={ink}
+                  fontSize={11}
+                  textAnchor={g.qAnchor ?? 'middle'}
+                >
                   {g.qLabel}
                 </SvgText>
               ) : null}

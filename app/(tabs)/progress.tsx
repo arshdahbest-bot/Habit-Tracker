@@ -4,12 +4,16 @@ import { LayoutChangeEvent, Platform, Pressable, StyleSheet, Text, View } from '
 import Svg, { G, Line, Rect, Text as SvgText } from 'react-native-svg';
 import { Body, Card, Muted, Screen, Title } from '../../components/UI';
 import { useApp } from '../../context/AppContext';
-import { SUBJECTS } from '../../data/subjects';
+import { chaptersFor, SUBJECTS } from '../../data/subjects';
+import { chapterStudied } from '../../services/chapters';
+import { estimateGrade } from '../../services/grades';
+import { useMySubjects } from '../../services/mySubjects';
 import { getProgress, lastDays, ProgressData, streak } from '../../services/progress';
 
 export default function ProgressScreen() {
   const { colors, profile } = useApp();
   const [data, setData] = useState<ProgressData | null>(null);
+  const { list, chosen } = useMySubjects();
 
   // Reload every time the tab is opened so it reflects the latest studying.
   useFocusEffect(
@@ -20,14 +24,23 @@ export default function ProgressScreen() {
 
   if (!data) return <Screen>{null}</Screen>;
 
-  const totalLessons = SUBJECTS.reduce((n, s) => n + s.lessons.length, 0);
-  const totalCards = SUBJECTS.reduce((n, s) => n + s.flashcards.length, 0);
-  const lessonsDone = SUBJECTS.reduce((n, s) => n + s.lessons.filter((l) => data.lessonsDone[l.id]).length, 0);
-  const cardsDone = SUBJECTS.reduce((n, s) => n + Math.min(data.cardsMastered[s.id] ?? 0, s.flashcards.length), 0);
+
+  // Per-subject stats for the student's subjects, at their level.
+  const stats = list.map(({ subject: s, level, levelLabel }) => {
+    const chapters = chaptersFor(s, level).flatMap((u) => u.chapters);
+    const studied = chapters.filter((c) => chapterStudied(data, s, c.id)).length;
+    const recent = data.quizzes.filter((q) => q.subjectId === s.id).slice(-5);
+    const avg = recent.length ? Math.round((recent.reduce((n, q) => n + q.score / q.total, 0) / recent.length) * 100) : null;
+    return { s, levelLabel, chapters: chapters.length, studied, avg, grade: avg === null ? null : estimateGrade(avg) };
+  });
+  const totalChapters = stats.reduce((n, x) => n + x.chapters, 0);
+  const totalStudied = stats.reduce((n, x) => n + x.studied, 0);
   const quizAvg = data.quizzes.length
     ? Math.round((data.quizzes.reduce((n, q) => n + q.score / q.total, 0) / data.quizzes.length) * 100)
     : null;
   const days = streak(data);
+  const graded = stats.filter((x) => x.s.levels !== 'core');
+  const predicted = chosen && graded.length > 0 && graded.every((x) => x.grade !== null) ? graded.reduce((n, x) => n + (x.grade ?? 0), 0) : null;
 
   return (
     <Screen>
@@ -37,10 +50,17 @@ export default function ProgressScreen() {
 
       <View style={styles.tiles}>
         <Tile emoji="🔥" value={`${days}`} label="day streak" />
-        <Tile emoji="📚" value={`${lessonsDone}/${totalLessons}`} label="lessons done" />
-        <Tile emoji="🃏" value={`${cardsDone}/${totalCards}`} label="cards mastered" />
+        <Tile emoji="📚" value={`${totalStudied}/${totalChapters}`} label="chapters studied" />
         <Tile emoji="📝" value={quizAvg === null ? '–' : `${quizAvg}%`} label="avg quiz score" />
+        <Tile emoji="🎓" value={predicted === null ? '–' : `${predicted}/${graded.length * 7}`} label="predicted points" />
       </View>
+      <Muted style={{ marginTop: -4, marginBottom: 12, fontSize: 12 }}>
+        {predicted === null
+          ? chosen
+            ? 'Take a quiz in each of your subjects to see a predicted Diploma total.'
+            : 'Choose your subjects on Home to see a predicted Diploma total.'
+          : `Plus up to 3 core points from TOK and the Extended Essay (max 45). Estimates from your recent quiz scores — not official IB grades.`}
+      </Muted>
 
       <Card>
         <Body style={{ fontWeight: '800' }}>Study activity · last 7 days</Body>
@@ -50,26 +70,22 @@ export default function ProgressScreen() {
 
       <Card>
         <Body style={{ fontWeight: '800', marginBottom: 8 }}>By subject</Body>
-        {SUBJECTS.map((s) => {
-          const l = s.lessons.filter((x) => data.lessonsDone[x.id]).length;
-          const c = Math.min(data.cardsMastered[s.id] ?? 0, s.flashcards.length);
-          const qs = data.quizzes.filter((q) => q.subjectId === s.id);
-          const best = qs.length ? Math.max(...qs.map((q) => q.score / q.total)) : 0;
-          const pct = Math.round(((l / s.lessons.length + c / s.flashcards.length + best) / 3) * 100);
+        {stats.map(({ s, levelLabel, chapters, studied, avg, grade }) => {
+          const pct = chapters ? Math.round((studied / chapters) * 100) : 0;
           return (
             <View key={s.id} style={{ marginBottom: 14 }}>
               <View style={styles.subjectRow}>
-                <Body style={{ fontWeight: '700' }}>
-                  {s.emoji} {s.name}
+                <Body style={{ fontWeight: '700', flexShrink: 1 }}>
+                  {s.emoji} {s.short ?? s.name}
+                  {chosen && levelLabel ? ` · ${levelLabel}` : ''}
                 </Body>
-                <Body style={{ fontWeight: '800' }}>{pct}%</Body>
+                <Body style={{ fontWeight: '800' }}>{grade === null ? '–' : `≈ ${grade}`}</Body>
               </View>
               <View style={[styles.track, { backgroundColor: colors.cardAlt }]}>
                 {pct > 0 && <View style={[styles.fill, { width: `${pct}%`, backgroundColor: s.color }]} />}
               </View>
               <Muted style={{ marginTop: 4, fontSize: 12 }}>
-                {l}/{s.lessons.length} lessons · {c}/{s.flashcards.length} cards · best quiz{' '}
-                {qs.length ? `${Math.round(best * 100)}%` : '–'}
+                {studied}/{chapters} chapters studied · recent quiz avg {avg === null ? '–' : `${avg}%`}
               </Muted>
             </View>
           );
@@ -89,7 +105,8 @@ export default function ProgressScreen() {
               return (
                 <View key={q.at} style={[styles.quizRow, { borderBottomColor: colors.border }]}>
                   <Body style={{ flex: 1 }}>
-                    {s?.emoji} {s?.name ?? q.subjectId}
+                    {s?.emoji} {s?.short ?? s?.name ?? q.subjectId}
+                    {q.chapterId ? ` · ${q.chapterId}` : ''}
                   </Body>
                   <Muted style={{ marginRight: 12 }}>{q.day}</Muted>
                   <Body style={{ fontWeight: '800' }}>

@@ -1,4 +1,5 @@
 import * as ImagePicker from 'expo-image-picker';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -19,6 +20,7 @@ import Avatar from '../../components/Avatar';
 import { Muted } from '../../components/UI';
 import { useApp } from '../../context/AppContext';
 import { SUBJECTS } from '../../data/subjects';
+import { useMySubjects } from '../../services/mySubjects';
 import { askTutor, ChatImage, ChatMessage, loadChat, saveChat } from '../../services/ai';
 import { useSpeaker } from '../../services/useSpeaker';
 
@@ -42,10 +44,18 @@ export default function AskScreen() {
   const [busy, setBusy] = useState(false);
   const scroll = useRef<ScrollView>(null);
   const tutorName = profile.tutorName || 'your tutor';
+  const { list, levelOf } = useMySubjects();
+  const params = useLocalSearchParams<{ subject?: string; prompt?: string }>();
 
   useEffect(() => {
     loadChat().then(setMessages);
   }, []);
+
+  // Opened from a chapter: pre-select the subject and pre-fill the question.
+  useEffect(() => {
+    if (params.subject) setSubject(params.subject);
+    if (params.prompt) setInput(params.prompt);
+  }, [params.subject, params.prompt]);
 
   function update(next: ChatMessage[]) {
     setMessages(next);
@@ -66,6 +76,7 @@ export default function AskScreen() {
       const answer = await askTutor(history, {
         tutorName,
         subject: SUBJECTS.find((s) => s.id === subject)?.name,
+        level: subject ? levelOf(subject) : undefined,
       });
       update([...history, { id: newId(), role: 'assistant', text: answer }]);
       if (autoSpeak) say(answer);
@@ -128,7 +139,7 @@ export default function AskScreen() {
 
         <View style={styles.controls}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0, flex: 1 }}>
-            {[{ id: null, name: 'Any subject', emoji: '✨' }, ...SUBJECTS].map((s) => {
+            {[{ id: null, name: 'Any subject', emoji: '✨' }, ...list.map((m) => ({ ...m.subject, name: m.subject.short ?? m.subject.name }))].map((s) => {
               const active = subject === s.id;
               return (
                 <Pressable

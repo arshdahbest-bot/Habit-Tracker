@@ -15,7 +15,10 @@ export type ChatMessage = {
 const BASE = (process.env.EXPO_PUBLIC_API_BASE_URL ?? '').replace(/\/$/, '');
 const CHAT_KEY = 'ask:chat';
 
-export async function askTutor(history: ChatMessage[], opts: { tutorName: string; subject?: string }): Promise<string> {
+export async function askTutor(
+  history: ChatMessage[],
+  opts: { tutorName: string; subject?: string; level?: string },
+): Promise<string> {
   const usable = history.filter((m) => !m.error);
   const lastUser = [...usable].reverse().find((m) => m.role === 'user');
   const messages = usable.map((m) => ({
@@ -32,7 +35,7 @@ export async function askTutor(history: ChatMessage[], opts: { tutorName: string
     res = await fetch(`${BASE}/api/ask`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages, tutorName: opts.tutorName, subject: opts.subject }),
+      body: JSON.stringify({ messages, tutorName: opts.tutorName, subject: opts.subject, level: opts.level }),
       signal: controller.signal,
     });
   } catch {

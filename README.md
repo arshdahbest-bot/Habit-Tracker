@@ -7,21 +7,29 @@ iPhone, Android and the web from one codebase and can be published to the App St
 
 | Tab | What it does |
 | --- | --- |
-| 🏠 **Home** | Add your name and photo. Your photo becomes your **tutor avatar**. **Light / dark mode** switch in the top-right. |
-| 🎨 **Customize** (from Home) | Name your tutor; pick the app colour, avatar colour, accessory, shape, frame and cartoon-filter strength; choose the avatar's voice, speed and pitch. |
-| 🧑‍🏫 **Tutor** | Pick a subject and lesson. Your avatar **teaches it step by step and reads it aloud** (text-to-speech), bobbing and "talking" while it speaks. |
-| 💬 **Ask AI** | Ask your tutor any question in any subject — type it or **send a photo** of the problem. Answers are explained step by step and your avatar **reads them aloud**. Powered by Claude (needs an API key — see below). |
-| 🃏 **Flashcards** | Flip cards with an animation. Cards you mark "still learning" come back later. Progress bar + shuffle. |
-| 📝 **Quiz** | IB-style multiple choice with instant feedback, explanations and a saved best score per subject. |
-| 📊 **Progress** | Study streak, lessons done, cards mastered, average quiz score, a 7-day activity chart, progress per subject and recent quiz results. |
-| 🎮 **Break** | Play **Snake** or **Ping Pong** — **once per day**. Afterwards you see **today's leaderboard**, ranked by score. It resets at midnight. |
+| 🏠 **Home** | Add your name and photo (it becomes your tutor avatar), light/dark switch, and **My IB subjects** with SL/HL badges and chapter progress. |
+| 🎯 **My IB subjects** (from Home) | Pick your 6 subjects + TOK and set each to **SL or HL**. SL hides HL-only chapters, and AI lessons are pitched at your level. It checks for 6 subjects with 3–4 at HL. |
+| 🎨 **Customize** (from Home) | Tutor name; app colour, avatar colour, accessory, shape, frame and cartoon filter; avatar voice, speed and pitch. |
+| 🧑‍🏫 **Tutor** | The full **IB syllabus** for each subject, unit by unit. Open any chapter to: play a built-in lesson, get an **AI-written lesson for that chapter at your level** (read aloud), make **chapter flashcards or a quiz**, or ask the AI about it. |
+| 💬 **Ask AI** | Ask any question in any subject — type it or **send a photo** of the problem. Answers are explained step by step and read aloud. |
+| 🃏 **Cards** / 📝 **Quiz** | Built-in flashcards and IB-style quizzes for every subject; quiz results show an estimated IB grade (1–7). |
+| 📊 **Progress** | Study streak, chapters studied, a 7-day activity chart, estimated grade per subject and a predicted Diploma points total. |
+| 🎮 **Break** | Play **Snake** or **Ping Pong** — **once per day** — then see **today's leaderboard**. |
 
-Subjects included: Biology, Chemistry, Physics, Maths AA, Economics, History.
+**Subjects (14):** English A: Language & Literature · French B · Hindi B · Economics · Business Management ·
+History · Psychology · Biology · Chemistry · Physics · Computer Science · Environmental Systems & Societies ·
+Maths AA · Theory of Knowledge. Chapter lists are in `data/syllabus.ts` (sciences follow the guides for first
+assessment 2025, ESS 2026, CS and Psychology 2027). **Check them against the current IB subject guides
+before publishing** — the IB revises courses regularly.
+
+Hand-written lessons, flashcards and quizzes are in `data/subjects.ts` and `data/moreSubjects.ts`. Every
+other chapter gets its lesson, flashcards and quiz written by Claude on demand (`app/api/generate+api.ts`),
+then saved on the phone so each chapter is only generated once.
 
 **Economics diagrams:** Economics lessons show IB-style diagrams under each step (demand, supply,
-equilibrium, demand shifts, excess supply, PED, total revenue, negative externalities), and the
-Economics lesson list has an interactive **Diagram Lab** where you shift supply and demand and watch
-the equilibrium move. Diagrams live in `components/econ/`; attach one to a lesson step with the
+equilibrium, demand shifts, excess supply, PED comparisons with worked percentages, perfectly
+elastic/inelastic demand, PED along a straight-line demand curve, total revenue, negative
+externalities). Chapters 2.1–2.3 include an interactive **Diagram Lab**, and chapter 2.5 a **PED calculator**. Diagrams live in `components/econ/`; attach one to a lesson step with the
 `diagrams` field in `data/subjects.ts`.
 To add more content, edit **`data/subjects.ts`** — every screen reads from that one file.
 
@@ -45,10 +53,16 @@ app/
   _layout.tsx          root: theme + profile provider
   (tabs)/_layout.tsx   bottom tab bar
   (tabs)/index.tsx     Home: avatar setup, theme switch, subjects
-  (tabs)/tutor.tsx     Avatar tutor lessons (text-to-speech)
+  (tabs)/tutor.tsx     IB syllabus browser (units → chapters)
+  chapter.tsx          one chapter: lessons, practice, tools
+  lesson.tsx           lesson player (built-in or AI-written), read aloud
+  practice.tsx         AI flashcards / quiz for one chapter
+  subjects.tsx         choose subjects and SL/HL
   (tabs)/ask.tsx       Ask AI chat (text + photo questions, answers read aloud)
   customize.tsx        avatar, voice and colour settings
-  api/ask+api.ts       server-side route that calls Claude (keeps the API key secret)
+  api/ask+api.ts       server-side route for Ask AI (keeps the API key secret)
+  api/generate+api.ts  server-side route that writes chapter lessons, flashcards and quizzes
+server/claude.ts       shared helpers for the API routes
   (tabs)/flashcards.tsx
   (tabs)/quiz.tsx
   (tabs)/progress.tsx  personal progress dashboard
@@ -58,9 +72,12 @@ components/
   UI.tsx               shared buttons, cards, subject picker
   games/SnakeGame.tsx
   games/PongGame.tsx
-  econ/                economics graphs, diagram presets, Diagram Lab
+  econ/                economics graphs, diagram presets, Diagram Lab, PED calculator
+  FlashcardDeck.tsx / QuizRunner.tsx   shared flashcard and quiz components
 context/AppContext.tsx light/dark theme + saved profile
-data/subjects.ts       all lessons, flashcards and quiz questions
+data/syllabus.ts       IB units and chapters for every subject (HL-only chapters marked)
+data/subjects.ts       subjects, built-in lessons, flashcards and quiz questions
+data/moreSubjects.ts   content for English A, French B, Hindi B, BM, Psychology, CS, ESS, TOK
 services/progress.ts   personal progress tracking (stored on the device)
 services/ai.ts         sends questions to the Ask AI route, saves chat history
 services/useSpeaker.ts avatar voice (text-to-speech with the chosen voice settings)

@@ -71,6 +71,9 @@ export type Profile = {
   avatarStyle: AvatarStyle;
   voice: VoiceSettings;
   accent: string; // key of ACCENTS
+  // The student's IB subjects and levels, e.g. { bio: 'HL', math: 'SL', tok: 'core' }.
+  // Empty until they choose, in which case every subject is shown.
+  subjects: Record<string, 'SL' | 'HL' | 'core'>;
 };
 
 // App colour choices. Each has a light- and a dark-mode shade.
@@ -109,6 +112,7 @@ const defaultProfile: Profile = {
   avatarStyle: { hue: '#4F46E5', hat: '🎓', shape: 'circle', filter: 2, ring: 'thick' },
   voice: { rate: 0.95, pitch: 1, voiceId: null },
   accent: 'indigo',
+  subjects: {},
 };
 
 const AppContext = createContext<AppState | null>(null);

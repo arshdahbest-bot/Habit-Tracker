@@ -1,10 +1,13 @@
 import type { DiagramId } from '../components/econ/diagrams';
+import { MORE_SUBJECTS } from './moreSubjects';
+import { Chapter, SYLLABUS, Unit } from './syllabus';
 
 // IBDP study content. Add more subjects, lessons, flashcards and questions here —
 // every screen in the app reads from this file.
 
 export type Lesson = {
   id: string;
+  chapters?: string[]; // syllabus chapter ids this lesson covers
   title: string;
   steps: string[]; // each step is one "slide" the avatar tutor explains
   diagrams?: Record<number, DiagramId>; // step index -> diagram shown under that step
@@ -19,20 +22,27 @@ export type QuizQuestion = {
   explanation: string;
 };
 
-export type Subject = {
+export type Level = 'SL' | 'HL';
+
+export type SubjectContent = {
   id: string;
   name: string;
+  short?: string; // shorter name for chips and tabs
   group: string;
   emoji: string;
   color: string;
+  levels: 'SLHL' | 'core'; // 'core' = TOK (no SL/HL)
   lessons: Lesson[];
   flashcards: Flashcard[];
   quiz: QuizQuestion[];
 };
 
-export const SUBJECTS: Subject[] = [
+export type Subject = SubjectContent & { units: Unit[] };
+
+const BASE_SUBJECTS: SubjectContent[] = [
   {
     id: 'bio',
+    levels: 'SLHL',
     name: 'Biology',
     group: 'Group 4 · Sciences',
     emoji: '🧬',
@@ -40,6 +50,7 @@ export const SUBJECTS: Subject[] = [
     lessons: [
       {
         id: 'bio-cells',
+        chapters: ['A2.2'],
         title: 'Cell Theory & Cell Structure',
         steps: [
           'Cell theory has three main ideas: all living things are made of cells, the cell is the smallest unit of life, and cells only come from pre-existing cells.',
@@ -51,6 +62,7 @@ export const SUBJECTS: Subject[] = [
       },
       {
         id: 'bio-dna',
+        chapters: ['D1.1'],
         title: 'DNA Replication',
         steps: [
           'DNA replication is semi-conservative: each new DNA molecule keeps one original strand and gains one newly built strand.',
@@ -79,6 +91,7 @@ export const SUBJECTS: Subject[] = [
   },
   {
     id: 'chem',
+    levels: 'SLHL',
     name: 'Chemistry',
     group: 'Group 4 · Sciences',
     emoji: '⚗️',
@@ -86,6 +99,7 @@ export const SUBJECTS: Subject[] = [
     lessons: [
       {
         id: 'chem-mole',
+        chapters: ['S1.4'],
         title: 'The Mole Concept',
         steps: [
           'A mole is an amount of substance containing 6.02 times ten to the power 23 particles. This number is called Avogadro’s constant.',
@@ -97,6 +111,7 @@ export const SUBJECTS: Subject[] = [
       },
       {
         id: 'chem-bonding',
+        chapters: ['S2.1', 'S2.2', 'S2.3'],
         title: 'Chemical Bonding',
         steps: [
           'Ionic bonding is the electrostatic attraction between oppositely charged ions, usually formed between a metal and a non-metal.',
@@ -125,6 +140,7 @@ export const SUBJECTS: Subject[] = [
   },
   {
     id: 'phys',
+    levels: 'SLHL',
     name: 'Physics',
     group: 'Group 4 · Sciences',
     emoji: '🪐',
@@ -132,6 +148,7 @@ export const SUBJECTS: Subject[] = [
     lessons: [
       {
         id: 'phys-kinematics',
+        chapters: ['A.1'],
         title: 'Kinematics',
         steps: [
           'Kinematics describes motion using displacement, velocity and acceleration. Displacement and velocity are vectors, so direction matters.',
@@ -143,6 +160,7 @@ export const SUBJECTS: Subject[] = [
       },
       {
         id: 'phys-energy',
+        chapters: ['A.3'],
         title: 'Work, Energy & Power',
         steps: [
           'Work done equals force times displacement in the direction of the force: W equals F s cos theta.',
@@ -171,6 +189,7 @@ export const SUBJECTS: Subject[] = [
   },
   {
     id: 'math',
+    levels: 'SLHL',
     name: 'Maths AA',
     group: 'Group 5 · Mathematics',
     emoji: '📐',
@@ -178,6 +197,7 @@ export const SUBJECTS: Subject[] = [
     lessons: [
       {
         id: 'math-diff',
+        chapters: ['5a', '5c'],
         title: 'Introduction to Differentiation',
         steps: [
           'Differentiation finds the gradient of a curve at any point. The derivative of y with respect to x is written d y by d x.',
@@ -189,6 +209,7 @@ export const SUBJECTS: Subject[] = [
       },
       {
         id: 'math-seq',
+        chapters: ['1a'],
         title: 'Arithmetic & Geometric Sequences',
         steps: [
           'An arithmetic sequence adds the same common difference d each time. The nth term is u one plus n minus one times d.',
@@ -217,13 +238,15 @@ export const SUBJECTS: Subject[] = [
   },
   {
     id: 'econ',
+    levels: 'SLHL',
     name: 'Economics',
-    group: 'Group 3 · Individuals & Societies',
+    group: 'Group 3 · Individuals and societies',
     emoji: '📈',
     color: '#EC4899',
     lessons: [
       {
         id: 'econ-sd',
+        chapters: ['2.1', '2.2', '2.3'],
         title: 'Supply & Demand',
         steps: [
           'The law of demand says that as price rises, quantity demanded falls, ceteris paribus, meaning all other things being equal.',
@@ -236,18 +259,23 @@ export const SUBJECTS: Subject[] = [
       },
       {
         id: 'econ-elasticity',
-        title: 'Price Elasticity of Demand',
+        chapters: ['2.5'],
+        title: 'Price Elasticity of Demand (PED)',
         steps: [
-          'Price elasticity of demand, or PED, measures how responsive quantity demanded is to a change in price.',
-          'PED equals the percentage change in quantity demanded divided by the percentage change in price.',
-          'If the absolute value is greater than one, demand is elastic. If it is less than one, demand is inelastic.',
-          'Determinants include the number of substitutes, whether the good is a necessity, the proportion of income spent on it, and time.',
-          'Firms use PED to set prices: raising the price of an inelastic good increases total revenue.',
+          'Price elasticity of demand, PED, measures how responsive quantity demanded is to a change in the price of the good, ceteris paribus.',
+          'PED equals the percentage change in quantity demanded divided by the percentage change in price. Price and quantity demanded move in opposite directions, so PED is negative, and economists compare its absolute value.',
+          'Worked example, calculations are assessed at HL: a coffee rises from 4 dollars to 5 dollars, a 25 percent rise, and sales fall from 200 to 150 cups, a 25 percent fall. PED equals minus 25 percent divided by 25 percent, which is minus 1, so demand is unit elastic.',
+          'If the absolute value of PED is greater than one, demand is elastic. If it is between zero and one, demand is inelastic. In the diagrams, the same price rise from P1 to P2 causes a big fall in quantity on the flatter curve, and only a small fall on the steeper one.',
+          'Special cases: perfectly inelastic demand has PED equal to zero and is a vertical line. Perfectly elastic demand has an infinite PED and is a horizontal line.',
+          'PED is not the same as slope. Along a straight-line demand curve, PED changes: it is elastic at high prices, unit elastic at the midpoint, and inelastic at low prices.',
+          'Determinants of PED: the number and closeness of substitutes, whether the good is a necessity, the proportion of income spent on it, how habit-forming it is, and the time period considered.',
+          'PED and total revenue: if demand is inelastic, raising the price increases total revenue. If demand is elastic, cutting the price increases total revenue. Governments tax goods with inelastic demand, like cigarettes, because tax revenue is high while consumption falls only a little.',
         ],
-        diagrams: { 2: 'ped', 4: 'revenue' },
+        diagrams: { 3: 'ped', 4: 'ped-extremes', 5: 'ped-linear', 7: 'revenue' },
       },
       {
         id: 'econ-externality',
+        chapters: ['2.8'],
         title: 'Market Failure: Negative Externalities',
         steps: [
           'Market failure happens when a free market does not allocate resources efficiently, so society’s welfare is not maximised.',
@@ -263,13 +291,20 @@ export const SUBJECTS: Subject[] = [
       { front: 'Ceteris paribus', back: 'All other things being equal.' },
       { front: 'Movement vs shift of demand', back: 'Price change → movement; non-price determinant → shift.' },
       { front: 'PED formula', back: '%Δ Quantity demanded ÷ %Δ Price' },
-      { front: '|PED| > 1 means…', back: 'Price elastic demand' },
+      { front: '|PED| > 1 means…', back: 'Price elastic demand: quantity changes proportionally more than price.' },
+      { front: '0 < |PED| < 1 means…', back: 'Price inelastic demand: quantity changes proportionally less than price.' },
+      { front: 'Determinants of PED', back: 'Substitutes, necessity vs luxury, share of income, habit-forming, time period.' },
+      { front: 'PED and total revenue', back: 'Inelastic: raise price → TR rises. Elastic: cut price → TR rises.' },
       { front: 'Market equilibrium', back: 'Where Qd = Qs; no excess demand or supply.' },
       { front: 'Opportunity cost', back: 'The value of the next best alternative given up.' },
       { front: 'Negative production externality', back: 'An external cost to third parties from production: MSC > MPC, so the good is over-produced.' },
     ],
     quiz: [
-      { question: 'Price rises 10%, quantity demanded falls 20%. PED is…', options: ['0.5', '−2 (elastic)', '−0.5 (inelastic)', '2 (inelastic)'], answer: 1, explanation: '−20% ÷ 10% = −2, |2| > 1 → elastic.' },
+      { question: 'Price rises 10%, quantity demanded falls 20%. PED is…', options: ['−0.5, inelastic', '−2, elastic', '−2, inelastic', '−0.5, elastic'], answer: 1, explanation: 'PED = −20% ÷ 10% = −2. Because |−2| > 1, demand is price elastic.' },
+      { question: 'Price rises from $4 to $5 and quantity falls from 200 to 150. PED is…', options: ['−0.25', '−1 (unit elastic)', '−4', '−0.8'], answer: 1, explanation: '%ΔQd = −50/200 = −25%; %ΔP = 1/4 = +25%; PED = −25% ÷ 25% = −1.' },
+      { question: 'A firm selling a good with inelastic demand raises its price. Total revenue…', options: ['Falls', 'Rises', 'Stays the same', 'Becomes zero'], answer: 1, explanation: 'Quantity falls proportionally less than price rises, so P × Q increases.' },
+      { question: 'A perfectly inelastic demand curve is…', options: ['Horizontal', 'Vertical', 'Downward sloping with slope −1', 'Upward sloping'], answer: 1, explanation: 'PED = 0: quantity demanded does not change at any price.' },
+      { question: 'Along a straight-line demand curve, PED is…', options: ['The same everywhere', 'Elastic at high prices and inelastic at low prices', 'Inelastic at high prices and elastic at low prices', 'Always −1'], answer: 1, explanation: 'Slope is constant, but %ΔQ/%ΔP changes: elastic above the midpoint, inelastic below it.' },
       { question: 'An increase in consumer income (normal good) causes…', options: ['Movement along D', 'D shifts right', 'D shifts left', 'S shifts right'], answer: 1, explanation: 'Income is a non-price determinant → demand shifts right.' },
       { question: 'At a price above equilibrium there is…', options: ['Excess demand', 'Excess supply', 'Equilibrium', 'No trade'], answer: 1, explanation: 'Qs > Qd at high prices → surplus.' },
       { question: 'Which good is likely to have inelastic demand?', options: ['A brand of cereal', 'Petrol', 'Concert tickets', 'Designer jeans'], answer: 1, explanation: 'Few close substitutes and a necessity.' },
@@ -279,13 +314,15 @@ export const SUBJECTS: Subject[] = [
   },
   {
     id: 'hist',
+    levels: 'SLHL',
     name: 'History',
-    group: 'Group 3 · Individuals & Societies',
+    group: 'Group 3 · Individuals and societies',
     emoji: '🏛️',
     color: '#B45309',
     lessons: [
       {
         id: 'hist-coldwar',
+        chapters: ['WH12'],
         title: 'Origins of the Cold War',
         steps: [
           'The Cold War was a period of rivalry between the United States and the Soviet Union from around 1945 to 1991.',
@@ -297,6 +334,7 @@ export const SUBJECTS: Subject[] = [
       },
       {
         id: 'hist-essay',
+        chapters: ['SK2'],
         title: 'Writing an IB History Essay',
         steps: [
           'Start with a clear introduction that defines key terms and states your argument directly.',
@@ -325,6 +363,34 @@ export const SUBJECTS: Subject[] = [
   },
 ];
 
+// Ordered by IB subject group, with TOK (DP core) last.
+const ORDER = ['eng', 'fre', 'hin', 'econ', 'bm', 'hist', 'psych', 'bio', 'chem', 'phys', 'cs', 'ess', 'math', 'tok'];
+
+export const SUBJECTS: Subject[] = [...BASE_SUBJECTS, ...MORE_SUBJECTS]
+  .map((s) => ({ ...s, units: SYLLABUS[s.id] ?? [] }))
+  .sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id));
+
 export function getSubject(id: string | undefined) {
   return SUBJECTS.find((s) => s.id === id) ?? SUBJECTS[0];
+}
+
+/** Chapters a student at this level studies (SL students don't see HL-only chapters). */
+export function chaptersFor(subject: Subject, level: Level | undefined): { unit: Unit; chapters: Chapter[] }[] {
+  return subject.units.map((unit) => ({
+    unit,
+    chapters: unit.chapters.filter((c) => level === 'HL' || subject.levels === 'core' || !c.hl),
+  }));
+}
+
+export function findChapter(subject: Subject, chapterId: string | undefined) {
+  for (const unit of subject.units) {
+    const chapter = unit.chapters.find((c) => c.id === chapterId);
+    if (chapter) return { unit, chapter };
+  }
+  return null;
+}
+
+/** Built-in lessons written for a chapter. */
+export function lessonsForChapter(subject: Subject, chapterId: string) {
+  return subject.lessons.filter((l) => l.chapters?.includes(chapterId));
 }
