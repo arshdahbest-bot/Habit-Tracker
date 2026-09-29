@@ -3,9 +3,12 @@ import * as Speech from 'expo-speech';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import Avatar from '../../components/Avatar';
+import Diagram from '../../components/econ/Diagram';
+import DiagramLab from '../../components/econ/DiagramLab';
 import { Body, Button, Card, Muted, Screen, SubjectPicker, Title } from '../../components/UI';
 import { useApp } from '../../context/AppContext';
 import { getSubject, Lesson } from '../../data/subjects';
+import { getProgress, recordLesson } from '../../services/progress';
 
 export default function TutorScreen() {
   const { colors, profile } = useApp();
@@ -55,6 +58,18 @@ export default function TutorScreen() {
   // Stop talking when leaving the screen / unmounting.
   useEffect(() => stop, [stop]);
 
+  // Reaching the last step counts as completing the lesson.
+  const [done, setDone] = useState<Record<string, string>>({});
+  useEffect(() => {
+    getProgress().then((p) => setDone(p.lessonsDone));
+  }, [lesson]);
+  useEffect(() => {
+    if (lesson && step === lesson.steps.length - 1 && !done[lesson.id]) {
+      recordLesson(lesson.id);
+      setDone((d) => ({ ...d, [lesson.id]: 'today' }));
+    }
+  }, [lesson, step, done]);
+
   function openLesson(l: Lesson) {
     setStep(0);
     setLesson(l);
@@ -85,11 +100,15 @@ export default function TutorScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <Body style={{ fontWeight: '700' }}>{l.title}</Body>
-              <Muted>{l.steps.length} steps · ~{Math.ceil(l.steps.length * 0.5)} min</Muted>
+              <Muted>
+                {l.steps.length} steps · ~{Math.ceil(l.steps.length * 0.5)} min
+                {l.diagrams ? ' · 📈 diagrams' : ''}
+              </Muted>
             </View>
-            <Text style={{ color: colors.textMuted, fontSize: 20 }}>▶</Text>
+            <Text style={{ color: done[l.id] ? colors.success : colors.textMuted, fontSize: 20 }}>{done[l.id] ? '✓' : '▶'}</Text>
           </Pressable>
         ))}
+        {subject.id === 'econ' && <DiagramLab />}
       </Screen>
     );
   }
@@ -116,6 +135,12 @@ export default function TutorScreen() {
         <View style={[styles.tail, { borderBottomColor: subject.color }]} />
         <Body style={{ fontSize: 17, lineHeight: 26 }}>{lesson.steps[step]}</Body>
       </View>
+
+      {lesson.diagrams?.[step] && (
+        <Card style={{ marginTop: 12 }}>
+          <Diagram id={lesson.diagrams[step]} />
+        </Card>
+      )}
 
       <View style={styles.progress}>
         {lesson.steps.map((_, i) => (

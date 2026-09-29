@@ -1,3 +1,5 @@
+import type { DiagramId } from '../components/econ/diagrams';
+
 // IBDP study content. Add more subjects, lessons, flashcards and questions here —
 // every screen in the app reads from this file.
 
@@ -5,6 +7,7 @@ export type Lesson = {
   id: string;
   title: string;
   steps: string[]; // each step is one "slide" the avatar tutor explains
+  diagrams?: Record<number, DiagramId>; // step index -> diagram shown under that step
 };
 
 export type Flashcard = { front: string; back: string };
@@ -227,8 +230,9 @@ export const SUBJECTS: Subject[] = [
           'A change in price causes a movement along the demand curve. A change in a non-price determinant, like income or tastes, shifts the whole curve.',
           'The law of supply says that as price rises, quantity supplied rises, because producing becomes more profitable.',
           'Market equilibrium is where quantity demanded equals quantity supplied. There is no shortage and no surplus.',
-          'Exam tip: always draw clear, fully labelled diagrams: price and quantity on the axes, curves labelled, and the equilibrium marked.',
+          'If the price is set above equilibrium, quantity supplied is greater than quantity demanded, so there is excess supply. Exam tip: always draw fully labelled diagrams, with price and quantity on the axes and every curve named.',
         ],
+        diagrams: { 0: 'demand', 1: 'demand-shift', 2: 'supply', 3: 'equilibrium', 4: 'surplus' },
       },
       {
         id: 'econ-elasticity',
@@ -240,6 +244,19 @@ export const SUBJECTS: Subject[] = [
           'Determinants include the number of substitutes, whether the good is a necessity, the proportion of income spent on it, and time.',
           'Firms use PED to set prices: raising the price of an inelastic good increases total revenue.',
         ],
+        diagrams: { 2: 'ped', 4: 'revenue' },
+      },
+      {
+        id: 'econ-externality',
+        title: 'Market Failure: Negative Externalities',
+        steps: [
+          'Market failure happens when a free market does not allocate resources efficiently, so society’s welfare is not maximised.',
+          'A negative production externality is a cost to third parties, such as pollution from a factory, that the producer does not pay for.',
+          'Because firms ignore this external cost, the marginal social cost, MSC, lies above the marginal private cost, MPC.',
+          'The market produces at Q m, where MPC meets marginal private benefit. The socially optimal output is lower, at Q star, where MSC meets marginal social benefit. Too much is produced.',
+          'The shaded triangle is the welfare loss. Governments can respond with a carbon tax, regulation or tradable permits. Evaluate the strengths and limitations of each.',
+        ],
+        diagrams: { 2: 'externality', 3: 'externality', 4: 'externality' },
       },
     ],
     flashcards: [
@@ -249,6 +266,7 @@ export const SUBJECTS: Subject[] = [
       { front: '|PED| > 1 means…', back: 'Price elastic demand' },
       { front: 'Market equilibrium', back: 'Where Qd = Qs; no excess demand or supply.' },
       { front: 'Opportunity cost', back: 'The value of the next best alternative given up.' },
+      { front: 'Negative production externality', back: 'An external cost to third parties from production: MSC > MPC, so the good is over-produced.' },
     ],
     quiz: [
       { question: 'Price rises 10%, quantity demanded falls 20%. PED is…', options: ['0.5', '−2 (elastic)', '−0.5 (inelastic)', '2 (inelastic)'], answer: 1, explanation: '−20% ÷ 10% = −2, |2| > 1 → elastic.' },
@@ -256,6 +274,7 @@ export const SUBJECTS: Subject[] = [
       { question: 'At a price above equilibrium there is…', options: ['Excess demand', 'Excess supply', 'Equilibrium', 'No trade'], answer: 1, explanation: 'Qs > Qd at high prices → surplus.' },
       { question: 'Which good is likely to have inelastic demand?', options: ['A brand of cereal', 'Petrol', 'Concert tickets', 'Designer jeans'], answer: 1, explanation: 'Few close substitutes and a necessity.' },
       { question: 'Opportunity cost is…', options: ['The price paid', 'The next best alternative forgone', 'Total cost', 'Sunk cost'], answer: 1, explanation: 'It is the value of the best option given up.' },
+      { question: 'With a negative production externality, the free-market output is…', options: ['Below the social optimum', 'Above the social optimum', 'Equal to the social optimum', 'Zero'], answer: 1, explanation: 'Firms ignore the external cost (MSC > MPC), so Qm > Q*.' },
     ],
   },
   {

@@ -11,9 +11,16 @@ iPhone, Android and the web from one codebase and can be published to the App St
 | 🧑‍🏫 **Tutor** | Pick a subject and lesson. Your avatar **teaches it step by step and reads it aloud** (text-to-speech), bobbing and "talking" while it speaks. |
 | 🃏 **Flashcards** | Flip cards with an animation. Cards you mark "still learning" come back later. Progress bar + shuffle. |
 | 📝 **Quiz** | IB-style multiple choice with instant feedback, explanations and a saved best score per subject. |
+| 📊 **Progress** | Study streak, lessons done, cards mastered, average quiz score, a 7-day activity chart, progress per subject and recent quiz results. |
 | 🎮 **Break** | Play **Snake** or **Ping Pong** — **once per day**. Afterwards you see **today's leaderboard**, ranked by score. It resets at midnight. |
 
 Subjects included: Biology, Chemistry, Physics, Maths AA, Economics, History.
+
+**Economics diagrams:** Economics lessons show IB-style diagrams under each step (demand, supply,
+equilibrium, demand shifts, excess supply, PED, total revenue, negative externalities), and the
+Economics lesson list has an interactive **Diagram Lab** where you shift supply and demand and watch
+the equilibrium move. Diagrams live in `components/econ/`; attach one to a lesson step with the
+`diagrams` field in `data/subjects.ts`.
 To add more content, edit **`data/subjects.ts`** — every screen reads from that one file.
 
 ## Run it
@@ -39,14 +46,17 @@ app/
   (tabs)/tutor.tsx     Avatar tutor lessons (text-to-speech)
   (tabs)/flashcards.tsx
   (tabs)/quiz.tsx
+  (tabs)/progress.tsx  personal progress dashboard
   (tabs)/break.tsx     once-a-day game + daily leaderboard
 components/
   Avatar.tsx           photo → animated avatar
   UI.tsx               shared buttons, cards, subject picker
   games/SnakeGame.tsx
   games/PongGame.tsx
+  econ/                economics graphs, diagram presets, Diagram Lab
 context/AppContext.tsx light/dark theme + saved profile
 data/subjects.ts       all lessons, flashcards and quiz questions
+services/progress.ts   personal progress tracking (stored on the device)
 services/dailyGame.ts  once-a-day lock + leaderboard (offline or Supabase)
 services/avatarService.ts optional AI avatar hook
 ```

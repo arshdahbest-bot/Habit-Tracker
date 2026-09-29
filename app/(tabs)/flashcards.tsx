@@ -4,6 +4,7 @@ import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, Muted, Screen, SubjectPicker, Title } from '../../components/UI';
 import { useApp } from '../../context/AppContext';
 import { Flashcard, getSubject } from '../../data/subjects';
+import { recordFlashcards } from '../../services/progress';
 
 function shuffle<T>(arr: T[]) {
   const a = [...arr];
@@ -53,7 +54,10 @@ export default function FlashcardsScreen() {
   }
 
   function answer(gotIt: boolean) {
-    if (gotIt) setKnown((k) => k + 1);
+    if (gotIt) {
+      setKnown(known + 1);
+      recordFlashcards(subjectId, known + 1);
+    }
     else setDeck((d) => [...d, d[index]]); // show it again later
     resetFlip();
     setIndex((i) => i + 1);

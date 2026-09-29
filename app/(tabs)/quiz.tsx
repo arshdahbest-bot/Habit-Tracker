@@ -6,6 +6,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Body, Button, Card, Muted, Screen, SubjectPicker, Title } from '../../components/UI';
 import { useApp } from '../../context/AppContext';
 import { getSubject } from '../../data/subjects';
+import { recordQuiz } from '../../services/progress';
 
 const bestKey = (id: string) => `quiz:best:${id}`;
 
@@ -56,6 +57,7 @@ export default function QuizScreen() {
     const nextIndex = index + 1;
     setSelected(null);
     setIndex(nextIndex);
+    if (nextIndex >= total) recordQuiz(subjectId, score, total);
     if (nextIndex >= total && (best === null || score > best)) {
       setBest(score);
       AsyncStorage.setItem(bestKey(subjectId), String(score)).catch(() => {});
