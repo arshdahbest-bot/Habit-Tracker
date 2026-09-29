@@ -8,10 +8,9 @@ iPhone, Android and the web from one codebase and can be published to the App St
 | Tab | What it does |
 | --- | --- |
 | 🏠 **Home** | Add your name and photo (it becomes your tutor avatar), light/dark switch, and **My IB subjects** with SL/HL badges and chapter progress. |
-| 🎯 **My IB subjects** (from Home) | Pick your 6 subjects + TOK and set each to **SL or HL**. SL hides HL-only chapters, and AI lessons are pitched at your level. It checks for 6 subjects with 3–4 at HL. |
+| 🎯 **My IB subjects** (from Home) | Pick your 6 subjects + TOK and set each to **SL or HL**. SL hides HL-only chapters. It checks for 6 subjects with 3–4 at HL. |
 | 🎨 **Customize** (from Home) | Tutor name; app colour, avatar colour, accessory, shape, frame and cartoon filter; avatar voice, speed and pitch. |
-| 🧑‍🏫 **Tutor** | The full **IB syllabus** for each subject, unit by unit. Open any chapter to: play a built-in lesson, get an **AI-written lesson for that chapter at your level** (read aloud), make **chapter flashcards or a quiz**, or ask the AI about it. |
-| 💬 **Ask AI** | Ask any question in any subject — type it or **send a photo** of the problem. Answers are explained step by step and read aloud. |
+| 🧑‍🏫 **Tutor** | The full **IB syllabus** for each subject, unit by unit. Chapters with a 📘 have a built-in lesson your avatar reads aloud; tick any chapter off as **studied** to track your progress. |
 | 🃏 **Cards** / 📝 **Quiz** | Built-in flashcards and IB-style quizzes for every subject; quiz results show an estimated IB grade (1–7). |
 | 📊 **Progress** | Study streak, chapters studied, a 7-day activity chart, estimated grade per subject and a predicted Diploma points total. |
 | 🎮 **Break** | Play **Snake** or **Ping Pong** — **once per day** — then see **today's leaderboard**. |
@@ -22,9 +21,9 @@ Maths AA · Theory of Knowledge. Chapter lists are in `data/syllabus.ts` (scienc
 assessment 2025, ESS 2026, CS and Psychology 2027). **Check them against the current IB subject guides
 before publishing** — the IB revises courses regularly.
 
-Hand-written lessons, flashcards and quizzes are in `data/subjects.ts` and `data/moreSubjects.ts`. Every
-other chapter gets its lesson, flashcards and quiz written by Claude on demand (`app/api/generate+api.ts`),
-then saved on the phone so each chapter is only generated once.
+Lessons, flashcards and quizzes are in `data/subjects.ts` and `data/moreSubjects.ts`. To add a lesson,
+write its steps there and link it to a chapter with `chapters: ['2.5']`. Everything runs on the phone:
+no accounts, no API keys and no running costs (the optional Supabase leaderboard has a free tier).
 
 **Economics diagrams:** Economics lessons show IB-style diagrams under each step (demand, supply,
 equilibrium, demand shifts, excess supply, PED comparisons with worked percentages, perfectly
@@ -55,14 +54,9 @@ app/
   (tabs)/index.tsx     Home: avatar setup, theme switch, subjects
   (tabs)/tutor.tsx     IB syllabus browser (units → chapters)
   chapter.tsx          one chapter: lessons, practice, tools
-  lesson.tsx           lesson player (built-in or AI-written), read aloud
-  practice.tsx         AI flashcards / quiz for one chapter
+  lesson.tsx           lesson player, read aloud by the avatar
   subjects.tsx         choose subjects and SL/HL
-  (tabs)/ask.tsx       Ask AI chat (text + photo questions, answers read aloud)
   customize.tsx        avatar, voice and colour settings
-  api/ask+api.ts       server-side route for Ask AI (keeps the API key secret)
-  api/generate+api.ts  server-side route that writes chapter lessons, flashcards and quizzes
-server/claude.ts       shared helpers for the API routes
   (tabs)/flashcards.tsx
   (tabs)/quiz.tsx
   (tabs)/progress.tsx  personal progress dashboard
@@ -79,38 +73,9 @@ data/syllabus.ts       IB units and chapters for every subject (HL-only chapters
 data/subjects.ts       subjects, built-in lessons, flashcards and quiz questions
 data/moreSubjects.ts   content for English A, French B, Hindi B, BM, Psychology, CS, ESS, TOK
 services/progress.ts   personal progress tracking (stored on the device)
-services/ai.ts         sends questions to the Ask AI route, saves chat history
 services/useSpeaker.ts avatar voice (text-to-speech with the chosen voice settings)
 services/dailyGame.ts  once-a-day lock + leaderboard (offline or Supabase)
-services/avatarService.ts optional AI avatar hook
 ```
-
-## Setting up the Ask AI tutor
-
-The Ask AI tab uses Claude. Your API key is kept on the **server side** (the Expo dev server
-while testing, or your hosted API route when published) and is never built into the app.
-
-1. Create an account at [platform.claude.com](https://platform.claude.com), add billing, and create an API key.
-2. In the project folder, create a file called `.env` (copy `.env.example`) containing:
-   ```
-   ANTHROPIC_API_KEY=sk-ant-...your key...
-   ```
-   `.env` is in `.gitignore`, so it will not be uploaded to GitHub.
-3. Restart `npx expo start`. The app's questions go to `app/api/ask+api.ts`, which calls Claude.
-
-**Cost:** every question is a paid API call. The route uses `claude-opus-5-5` (most capable) with
-medium effort; a typical question costs a few US cents. To lower cost, change the `model` in
-`app/api/ask+api.ts` (for example to `claude-sonnet-5-5` or `claude-haiku-4-5`) and set a
-monthly spend limit in the Claude Console. The route also limits each device to 15 questions a minute.
-
-**When you publish the app**, phones can't reach your computer, so the API route must be hosted:
-```bash
-npx expo export --platform web
-eas deploy            # EAS Hosting; add ANTHROPIC_API_KEY as an environment variable there
-```
-Then set `EXPO_PUBLIC_API_BASE_URL` in `.env` to the deployed address (e.g. `https://your-app.expo.app`)
-before building with `eas build`. Before a public launch, add sign-in or App Check–style protection
-so strangers can't use your endpoint.
 
 ## Making the leaderboard truly multiplayer (recommended before launch)
 
@@ -138,14 +103,6 @@ connect a free **Supabase** database:
 3. Copy `.env.example` to `.env` and fill in `EXPO_PUBLIC_SUPABASE_URL` and
    `EXPO_PUBLIC_SUPABASE_ANON_KEY` (Project Settings → API).
 
-## Turning photos into AI cartoon avatars (optional)
-
-By default the avatar is created **on the device** (circle crop, colour wash, outline, hat,
-animation) — no photo ever leaves the phone. If you want a true AI-drawn cartoon, set
-`EXPO_PUBLIC_AVATAR_API_URL` to **your own server** endpoint that accepts `{ imageBase64 }` and
-returns `{ avatarUrl }` (see `services/avatarService.ts`). Keep any paid AI API key on that server,
-never inside the app.
-
 ## Publishing to the App Store / Google Play
 
 1. Change `ios.bundleIdentifier` and `android.package` in `app.json` (e.g. `com.yourname.ibstudybuddy`).
@@ -163,6 +120,6 @@ never inside the app.
    eas build --platform android  # Google Play Console account ($25 one-off)
    eas submit --platform android
    ```
-5. Before submitting, write a **privacy policy** (the app uses photos, sends Ask AI questions and
-   photos to Anthropic's API, and, if you enable Supabase, stores names and scores). Apple asks for its URL. Because many IB students are under 18,
+5. Before submitting, write a **privacy policy** (the app uses the student's photo on the device only,
+   and, if you enable Supabase, stores names and scores online). Apple asks for its URL. Because many IB students are under 18,
    keep data collection minimal.

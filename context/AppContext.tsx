@@ -67,7 +67,6 @@ export type Profile = {
   name: string;
   tutorName: string;
   photoUri: string | null;
-  avatarUri: string | null; // AI-generated avatar, if an avatar service is configured
   avatarStyle: AvatarStyle;
   voice: VoiceSettings;
   accent: string; // key of ACCENTS
@@ -108,7 +107,6 @@ const defaultProfile: Profile = {
   name: '',
   tutorName: 'Nova',
   photoUri: null,
-  avatarUri: null,
   avatarStyle: { hue: '#4F46E5', hat: '🎓', shape: 'circle', filter: 2, ring: 'thick' },
   voice: { rate: 0.95, pitch: 1, voiceId: null },
   accent: 'indigo',

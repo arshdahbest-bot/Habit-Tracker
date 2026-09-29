@@ -6,9 +6,9 @@ import PedCalculator from '../components/econ/PedCalculator';
 import { Badge, Body, Button, Card, Muted, Screen, Title } from '../components/UI';
 import { useApp } from '../context/AppContext';
 import { findChapter, getSubject, lessonsForChapter } from '../data/subjects';
-import { aiLessonId } from '../services/generate';
+import { chapterStudied } from '../services/chapters';
 import { useMySubjects } from '../services/mySubjects';
-import { getProgress, ProgressData } from '../services/progress';
+import { getProgress, ProgressData, setChapterStudied } from '../services/progress';
 
 // Interactive tools shown on specific chapters.
 const TOOLS: Record<string, Record<string, React.ComponentType>> = {
@@ -16,7 +16,7 @@ const TOOLS: Record<string, Record<string, React.ComponentType>> = {
 };
 
 export default function ChapterScreen() {
-  const { colors, profile } = useApp();
+  const { colors } = useApp();
   const params = useLocalSearchParams<{ subject?: string; chapter?: string }>();
   const subject = getSubject(params.subject);
   const found = findChapter(subject, params.chapter);
@@ -40,10 +40,12 @@ export default function ChapterScreen() {
   const { unit, chapter } = found;
   const builtIn = lessonsForChapter(subject, chapter.id);
   const Tool = TOOLS[subject.id]?.[chapter.id];
-  const tutor = profile.tutorName || 'your tutor';
-  const quizzes = progress?.quizzes.filter((q) => q.subjectId === subject.id && q.chapterId === chapter.id) ?? [];
-  const bestPct = quizzes.length ? Math.round(Math.max(...quizzes.map((q) => q.score / q.total)) * 100) : null;
-  const aiDone = !!progress?.lessonsDone[aiLessonId(subject.id, chapter.id)];
+  const studied = chapterStudied(progress, subject, chapter.id);
+
+  async function toggleStudied() {
+    await setChapterStudied(subject.id, chapter.id, !studied);
+    setProgress(await getProgress());
+  }
 
   return (
     <Screen>
@@ -77,46 +79,35 @@ export default function ChapterScreen() {
             </Text>
           </Pressable>
         ))}
-        <Pressable
-          onPress={() => router.push({ pathname: '/lesson', params: { subject: subject.id, chapter: chapter.id } })}
-          style={[styles.item, { borderColor: colors.border }]}
-        >
-          <Text style={{ fontSize: 20 }}>✨</Text>
-          <View style={{ flex: 1 }}>
-            <Body style={{ fontWeight: '700' }}>Full lesson with {tutor}</Body>
-            <Muted>AI-written for {subject.levels === 'core' ? 'TOK' : level ?? 'your level'} · read aloud</Muted>
-          </View>
-          <Text style={{ color: aiDone ? colors.success : colors.textMuted, fontSize: 18 }}>{aiDone ? '✓' : '▶'}</Text>
-        </Pressable>
+        {builtIn.length === 0 && (
+          <Muted>
+            There’s no built-in lesson for this chapter yet. Study it from your textbook or class notes, then tick it off
+            below.
+          </Muted>
+        )}
+        <Button
+          title={studied ? '✓ Studied — tap to undo' : 'Mark as studied'}
+          variant={studied ? 'secondary' : 'primary'}
+          onPress={toggleStudied}
+          style={{ marginTop: 12 }}
+        />
       </Card>
 
       <Card>
-        <Body style={{ fontWeight: '800', marginBottom: 8 }}>Practise</Body>
+        <Body style={{ fontWeight: '800', marginBottom: 8 }}>Practise {subject.short ?? subject.name}</Body>
         <View style={styles.row}>
           <Button
             title="🃏 Flashcards"
             variant="secondary"
-            onPress={() => router.push({ pathname: '/practice', params: { mode: 'cards', subject: subject.id, chapter: chapter.id } })}
+            onPress={() => router.push({ pathname: '/flashcards', params: { subject: subject.id } })}
             style={{ flex: 1 }}
           />
           <Button
             title="📝 Quiz"
-            onPress={() => router.push({ pathname: '/practice', params: { mode: 'quiz', subject: subject.id, chapter: chapter.id } })}
+            onPress={() => router.push({ pathname: '/quiz', params: { subject: subject.id } })}
             style={{ flex: 1 }}
           />
         </View>
-        {bestPct !== null && <Muted style={{ marginTop: 8 }}>Best quiz score on this chapter: {bestPct}%</Muted>}
-        <Button
-          title={`💬 Ask ${tutor} about this chapter`}
-          variant="secondary"
-          onPress={() =>
-            router.push({
-              pathname: '/ask',
-              params: { subject: subject.id, prompt: `Can you explain ${chapter.id} ${chapter.title} simply, with an example?` },
-            })
-          }
-          style={{ marginTop: 10 }}
-        />
       </Card>
 
       {Tool && <Tool />}

@@ -9,11 +9,9 @@ import { chaptersFor } from '../../data/subjects';
 import { chapterStudied } from '../../services/chapters';
 import { useMySubjects } from '../../services/mySubjects';
 import { getProgress, ProgressData } from '../../services/progress';
-import { generateAiAvatar, isAiAvatarEnabled } from '../../services/avatarService';
 
 export default function HomeScreen() {
   const { colors, mode, toggleTheme, profile, updateProfile } = useApp();
-  const [busy, setBusy] = useState(false);
   const { list, chosen } = useMySubjects();
   const [progress, setProgress] = useState<ProgressData | null>(null);
   useFocusEffect(
@@ -36,23 +34,14 @@ export default function HomeScreen() {
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.6,
-        base64: isAiAvatarEnabled(),
       };
       const result = fromCamera
         ? await ImagePicker.launchCameraAsync(options)
         : await ImagePicker.launchImageLibraryAsync(options);
       if (result.canceled || !result.assets?.[0]) return;
       const asset = result.assets[0];
-      updateProfile({ photoUri: asset.uri, avatarUri: null });
-
-      if (isAiAvatarEnabled() && asset.base64) {
-        setBusy(true);
-        const aiUrl = await generateAiAvatar(asset.base64);
-        if (aiUrl) updateProfile({ avatarUri: aiUrl });
-        setBusy(false);
-      }
+      updateProfile({ photoUri: asset.uri });
     } catch {
-      setBusy(false);
       Alert.alert('Oops', 'Could not load that photo. Please try another one.');
     }
   }
@@ -82,9 +71,7 @@ export default function HomeScreen() {
         <Text style={[styles.cardTitle, { color: colors.text, marginTop: 8 }]}>Your Tutor Avatar</Text>
         <Muted style={{ textAlign: 'center', marginBottom: 12 }}>
           {profile.photoUri
-            ? busy
-              ? 'Creating your AI avatar…'
-              : `Meet ${profile.tutorName || 'your tutor'}! Customize the look and voice below.`
+            ? `Meet ${profile.tutorName || 'your tutor'}! Customize the look and voice below.`
             : 'Add your picture and it becomes the avatar that teaches you.'}
         </Muted>
 

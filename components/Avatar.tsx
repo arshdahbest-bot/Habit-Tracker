@@ -50,7 +50,7 @@ export default function Avatar({ size = 120, speaking = false }: Props) {
 
   const tint = profile.avatarStyle.hue;
   const translateY = bob.interpolate({ inputRange: [0, 1], outputRange: [0, -6] });
-  const imageUri = profile.avatarUri ?? profile.photoUri;
+  const imageUri = profile.photoUri;
   const style = profile.avatarStyle;
   const ring = Math.max(style.ring === 'thin' ? 2 : 4, Math.round(size * (style.ring === 'thin' ? 0.02 : 0.05)));
   const radius = style.shape === 'circle' ? size / 2 : style.shape === 'rounded' ? size * 0.28 : size * 0.1;
@@ -68,7 +68,7 @@ export default function Avatar({ size = 120, speaking = false }: Props) {
           {imageUri ? (
             <>
               <Image source={{ uri: imageUri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
-              {!profile.avatarUri && wash > 0 && (
+              {wash > 0 && (
                 // Cartoon-style colour wash on top of the raw photo.
                 <View style={[StyleSheet.absoluteFill, { backgroundColor: tint, opacity: wash }]} />
               )}

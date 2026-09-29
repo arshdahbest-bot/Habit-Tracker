@@ -7,6 +7,7 @@ export type QuizResult = { subjectId: string; chapterId?: string; score: number;
 
 export type ProgressData = {
   lessonsDone: Record<string, string>; // lessonId -> day completed
+  chaptersDone: Record<string, string>; // "subjectId:chapterId" -> day the student marked it studied
   cardsMastered: Record<string, number>; // subjectId -> best number of cards mastered
   quizzes: QuizResult[];
   activity: Record<string, number>; // day -> number of study actions
@@ -14,7 +15,7 @@ export type ProgressData = {
 
 const KEY = 'progress:v1';
 
-const empty = (): ProgressData => ({ lessonsDone: {}, cardsMastered: {}, quizzes: [], activity: {} });
+const empty = (): ProgressData => ({ lessonsDone: {}, chaptersDone: {}, cardsMastered: {}, quizzes: [], activity: {} });
 
 export async function getProgress(): Promise<ProgressData> {
   try {
@@ -42,6 +43,15 @@ function update(fn: (p: ProgressData) => void) {
 export function recordLesson(lessonId: string) {
   return update((p) => {
     if (!p.lessonsDone[lessonId]) p.lessonsDone[lessonId] = todayKey();
+  });
+}
+
+/** Tick a chapter off as studied (or untick it). */
+export function setChapterStudied(subjectId: string, chapterId: string, studied: boolean) {
+  return update((p) => {
+    const key = `${subjectId}:${chapterId}`;
+    if (studied) p.chaptersDone[key] = todayKey();
+    else delete p.chaptersDone[key];
   });
 }
 

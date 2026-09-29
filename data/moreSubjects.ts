@@ -1,7 +1,7 @@
 import type { SubjectContent } from './subjects';
 
-// Built-in starter content for the newer subjects. Every chapter can also get an
-// AI-written lesson, flashcards and quiz from the Tutor tab once Ask AI is set up.
+// Built-in content for the newer subjects. Add more lessons here and link them to
+// syllabus chapters with `chapters: ['…']` so they appear in the Tutor tab.
 
 export const MORE_SUBJECTS: SubjectContent[] = [
   {

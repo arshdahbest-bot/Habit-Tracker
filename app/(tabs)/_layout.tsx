@@ -22,7 +22,6 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} /> }} />
       <Tabs.Screen name="tutor" options={{ title: 'Tutor', tabBarIcon: ({ focused }) => <TabIcon emoji="🧑‍🏫" focused={focused} /> }} />
-      <Tabs.Screen name="ask" options={{ title: 'Ask AI', tabBarIcon: ({ focused }) => <TabIcon emoji="💬" focused={focused} /> }} />
       <Tabs.Screen name="flashcards" options={{ title: 'Cards', tabBarIcon: ({ focused }) => <TabIcon emoji="🃏" focused={focused} /> }} />
       <Tabs.Screen name="quiz" options={{ title: 'Quiz', tabBarIcon: ({ focused }) => <TabIcon emoji="📝" focused={focused} /> }} />
       <Tabs.Screen name="progress" options={{ title: 'Progress', tabBarIcon: ({ focused }) => <TabIcon emoji="📊" focused={focused} /> }} />
