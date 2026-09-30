@@ -123,7 +123,7 @@ connect a free **Supabase** database:
 
 ## Publishing to the App Store / Google Play
 
-1. Change `ios.bundleIdentifier` and `android.package` in `app.json` (e.g. `com.yourname.ibee`).
+1. The app ID is `arsh.ibee.com` (`ios.bundleIdentifier` and `android.package` in `app.json`). Never change it after the first upload.
 2. Add an app icon and splash image (1024×1024 PNG) and reference them in `app.json`.
 3. Install the build tool and log in:
    ```bash
