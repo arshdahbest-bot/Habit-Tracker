@@ -1,0 +1,13 @@
+# Free hosting on Netlify: builds the web version of IBee on every push to main.
+[build]
+  command = "npx expo export --platform web --output-dir dist"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Let page links (like /quiz) work after a refresh.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
