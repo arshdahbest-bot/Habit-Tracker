@@ -19,7 +19,10 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "single"
+      "output": "single",
+      "name": "IBee",
+      "shortName": "IBee",
+      "themeColor": "#4F46E5"
     },
     "plugins": [
       "expo-router",
