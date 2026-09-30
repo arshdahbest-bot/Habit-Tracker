@@ -8,14 +8,14 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourname.ibee",
+      "bundleIdentifier": "arsh.ibee.com",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "IBee uses your photo to create your personal tutor avatar.",
         "NSCameraUsageDescription": "IBee uses your camera to take a photo for your tutor avatar."
       }
     },
     "android": {
-      "package": "com.yourname.ibee"
+      "package": "arsh.ibee.com"
     },
     "web": {
       "bundler": "metro",
