@@ -51,7 +51,7 @@ export default function HomeScreen() {
     <Screen>
       <View style={styles.header}>
         <View style={{ flex: 1 }}>
-          <Title subtitle="Your IBDP study buddy">
+          <Title subtitle="IBee · your IBDP study buddy">
             {profile.name ? `Hi, ${profile.name}! 👋` : 'Welcome! 👋'}
           </Title>
         </View>

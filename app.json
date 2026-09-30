@@ -1,21 +1,21 @@
 {
   "expo": {
-    "name": "IB Study Buddy",
-    "slug": "ib-study-buddy",
-    "scheme": "ibstudybuddy",
+    "name": "IBee",
+    "slug": "ibee",
+    "scheme": "ibee",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourname.ibstudybuddy",
+      "bundleIdentifier": "com.yourname.ibee",
       "infoPlist": {
-        "NSPhotoLibraryUsageDescription": "IB Study Buddy uses your photo to create your personal tutor avatar.",
-        "NSCameraUsageDescription": "IB Study Buddy uses your camera to take a photo for your tutor avatar."
+        "NSPhotoLibraryUsageDescription": "IBee uses your photo to create your personal tutor avatar.",
+        "NSCameraUsageDescription": "IBee uses your camera to take a photo for your tutor avatar."
       }
     },
     "android": {
-      "package": "com.yourname.ibstudybuddy"
+      "package": "com.yourname.ibee"
     },
     "web": {
       "bundler": "metro",
@@ -26,8 +26,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "IB Study Buddy uses your photo to create your personal tutor avatar.",
-          "cameraPermission": "IB Study Buddy uses your camera to take a photo for your tutor avatar."
+          "photosPermission": "IBee uses your photo to create your personal tutor avatar.",
+          "cameraPermission": "IBee uses your camera to take a photo for your tutor avatar."
         }
       ]
     ],

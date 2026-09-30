@@ -1,4 +1,4 @@
-# IB Study Buddy 🎓
+# IBee 🐝
 
 A student-friendly study app for **IBDP** students, built with **Expo (React Native)** so it runs on
 iPhone, Android and the web from one codebase and can be published to the App Store and Google Play.
@@ -123,7 +123,7 @@ connect a free **Supabase** database:
 
 ## Publishing to the App Store / Google Play
 
-1. Change `ios.bundleIdentifier` and `android.package` in `app.json` (e.g. `com.yourname.ibstudybuddy`).
+1. Change `ios.bundleIdentifier` and `android.package` in `app.json` (e.g. `com.yourname.ibee`).
 2. Add an app icon and splash image (1024×1024 PNG) and reference them in `app.json`.
 3. Install the build tool and log in:
    ```bash
