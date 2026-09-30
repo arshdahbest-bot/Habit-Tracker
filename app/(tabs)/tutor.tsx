@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Avatar from '../../components/Avatar';
 import { Badge, Body, Card, Muted, Screen, SubjectPicker, Title } from '../../components/UI';
 import { useApp } from '../../context/AppContext';
-import { chaptersFor, getSubject, lessonsForChapter } from '../../data/subjects';
+import { chaptersFor, getSubject, unitOverview } from '../../data/subjects';
 import { chapterStudied } from '../../services/chapters';
 import { useMySubjects, useSubjectSelection } from '../../services/mySubjects';
 import { getProgress, ProgressData } from '../../services/progress';
@@ -71,23 +71,29 @@ export default function TutorScreen() {
               </View>
               <Text style={{ color: colors.textMuted, fontSize: 18 }}>{isOpen(unit.id, i) ? '▾' : '▸'}</Text>
             </Pressable>
+            {isOpen(unit.id, i) && unitOverview(subject.id, unit.id) && (
+              <Pressable
+                onPress={() => router.push({ pathname: '/lesson', params: { subject: subject.id, unit: unit.id } })}
+                style={[styles.chapter, { borderTopColor: colors.border }]}
+              >
+                <Text style={{ color: colors.primary, fontWeight: '700', flex: 1 }}>▶ Unit overview with {profile.tutorName || 'your tutor'}</Text>
+              </Pressable>
+            )}
             {isOpen(unit.id, i) &&
               chapters.map((c) => {
                 const done = chapterStudied(progress, subject, c.id);
-                const hasLesson = lessonsForChapter(subject, c.id).length > 0;
                 return (
                   <Pressable
                     key={c.id}
                     onPress={() => router.push({ pathname: '/chapter', params: { subject: subject.id, chapter: c.id } })}
                     style={({ pressed }) => [styles.chapter, { borderTopColor: colors.border, opacity: pressed ? 0.7 : 1 }]}
                   >
-                    <Text style={[styles.code, { color: subject.color }]}>{c.id}</Text>
                     <View style={{ flex: 1 }}>
-                      <Text style={{ color: colors.text, fontSize: 15 }}>{c.title}</Text>
-                      <View style={{ flexDirection: 'row', gap: 6, marginTop: 3 }}>
+                      <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
+                        <Text style={[styles.code, { color: subject.color }]}>{c.id}</Text>
                         {c.hl && <Badge text="HL" color={colors.danger} />}
-                        {hasLesson && <Badge text="📘 lesson" color={colors.textMuted} />}
                       </View>
+                      <Text style={{ color: colors.text, fontSize: 15, marginTop: 2 }}>{c.title}</Text>
                     </View>
                     <Text style={{ color: done ? colors.success : colors.textMuted, fontSize: 16 }}>{done ? '✓' : '›'}</Text>
                   </Pressable>
@@ -104,5 +110,5 @@ const styles = StyleSheet.create({
   unit: { borderWidth: 1, borderRadius: 14, marginBottom: 10, overflow: 'hidden' },
   unitHeader: { flexDirection: 'row', alignItems: 'center', padding: 14 },
   chapter: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 14, borderTopWidth: StyleSheet.hairlineWidth },
-  code: { width: 44, fontWeight: '800', fontSize: 13 },
+  code: { fontWeight: '800', fontSize: 12 },
 });

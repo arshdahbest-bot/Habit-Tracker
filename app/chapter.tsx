@@ -5,7 +5,7 @@ import DiagramLab from '../components/econ/DiagramLab';
 import PedCalculator from '../components/econ/PedCalculator';
 import { Badge, Body, Button, Card, Muted, Screen, Title } from '../components/UI';
 import { useApp } from '../context/AppContext';
-import { findChapter, getSubject, lessonsForChapter } from '../data/subjects';
+import { chapterContent, findChapter, getSubject } from '../data/subjects';
 import { chapterStudied } from '../services/chapters';
 import { useMySubjects } from '../services/mySubjects';
 import { getProgress, ProgressData, setChapterStudied } from '../services/progress';
@@ -38,7 +38,7 @@ export default function ChapterScreen() {
     );
   }
   const { unit, chapter } = found;
-  const builtIn = lessonsForChapter(subject, chapter.id);
+  const content = chapterContent(subject.id, chapter.id);
   const Tool = TOOLS[subject.id]?.[chapter.id];
   const studied = chapterStudied(progress, subject, chapter.id);
 
@@ -61,29 +61,22 @@ export default function ChapterScreen() {
 
       <Card>
         <Body style={{ fontWeight: '800', marginBottom: 8 }}>Learn</Body>
-        {builtIn.map((l) => (
+        {content ? (
           <Pressable
-            key={l.id}
-            onPress={() => router.push({ pathname: '/lesson', params: { subject: subject.id, lesson: l.id, chapter: chapter.id } })}
+            onPress={() => router.push({ pathname: '/lesson', params: { subject: subject.id, chapter: chapter.id } })}
             style={[styles.item, { borderColor: colors.border }]}
           >
             <Text style={{ fontSize: 20 }}>📘</Text>
             <View style={{ flex: 1 }}>
-              <Body style={{ fontWeight: '700' }}>{l.title}</Body>
+              <Body style={{ fontWeight: '700' }}>Lesson: {chapter.title}</Body>
               <Muted>
-                Built-in lesson · {l.steps.length} steps{l.diagrams ? ' · 📈 diagrams' : ''}
+                {content.lesson.length} steps · read aloud{content.diagrams ? ' · 📈 diagrams' : ''}
               </Muted>
             </View>
-            <Text style={{ color: progress?.lessonsDone[l.id] ? colors.success : colors.textMuted, fontSize: 18 }}>
-              {progress?.lessonsDone[l.id] ? '✓' : '▶'}
-            </Text>
+            <Text style={{ color: studied ? colors.success : colors.textMuted, fontSize: 18 }}>{studied ? '✓' : '▶'}</Text>
           </Pressable>
-        ))}
-        {builtIn.length === 0 && (
-          <Muted>
-            There’s no built-in lesson for this chapter yet. Study it from your textbook or class notes, then tick it off
-            below.
-          </Muted>
+        ) : (
+          <Muted>This chapter’s lesson is coming soon. Study it from your textbook, then tick it off below.</Muted>
         )}
         <Button
           title={studied ? '✓ Studied — tap to undo' : 'Mark as studied'}
@@ -94,18 +87,20 @@ export default function ChapterScreen() {
       </Card>
 
       <Card>
-        <Body style={{ fontWeight: '800', marginBottom: 8 }}>Practise {subject.short ?? subject.name}</Body>
+        <Body style={{ fontWeight: '800', marginBottom: 8 }}>Practise this chapter</Body>
         <View style={styles.row}>
           <Button
-            title="🃏 Flashcards"
+            title={`🃏 Flashcards (${content?.cards.length ?? 0})`}
             variant="secondary"
-            onPress={() => router.push({ pathname: '/flashcards', params: { subject: subject.id } })}
+            onPress={() => router.push({ pathname: '/flashcards', params: { subject: subject.id, chapter: chapter.id } })}
             style={{ flex: 1 }}
+            disabled={!content?.cards.length}
           />
           <Button
-            title="📝 Quiz"
-            onPress={() => router.push({ pathname: '/quiz', params: { subject: subject.id } })}
+            title={`📝 Quiz (${content?.quiz.length ?? 0})`}
+            onPress={() => router.push({ pathname: '/quiz', params: { subject: subject.id, chapter: chapter.id } })}
             style={{ flex: 1 }}
+            disabled={!content?.quiz.length}
           />
         </View>
       </Card>

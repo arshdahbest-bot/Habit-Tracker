@@ -1,32 +1,35 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
+import ChapterPicker from '../../components/ChapterPicker';
 import FlashcardDeck from '../../components/FlashcardDeck';
-import { Button, Muted, Screen, SubjectPicker, Title } from '../../components/UI';
-import { getSubject } from '../../data/subjects';
-import { useSubjectSelection } from '../../services/mySubjects';
+import { Screen, SubjectPicker, Title } from '../../components/UI';
+import { chapterContent, findChapter, getSubject } from '../../data/subjects';
+import { useChapterSelection } from '../../services/chapters';
+import { useMySubjects, useSubjectSelection } from '../../services/mySubjects';
 import { recordFlashcards } from '../../services/progress';
 
+const NO_CARDS: never[] = [];
+
 export default function FlashcardsScreen() {
-  const params = useLocalSearchParams<{ subject?: string }>();
+  const params = useLocalSearchParams<{ subject?: string; chapter?: string }>();
   const [subjectId, setSubjectId] = useSubjectSelection(params.subject);
   const subject = getSubject(subjectId);
+  const { levelOf } = useMySubjects();
+  const level = levelOf(subject.id);
+  const [chapterId, setChapterId] = useChapterSelection(subject, level, params.chapter);
+  const content = chapterContent(subject.id, chapterId);
+  const chapter = findChapter(subject, chapterId)?.chapter;
 
   return (
     <Screen>
-      <Title subtitle="Tap a card to flip it. Cards you miss come back later.">Flashcards</Title>
+      <Title subtitle="Cards for one chapter at a time. Tap to flip; missed cards come back later.">Flashcards</Title>
       <SubjectPicker value={subjectId} onChange={setSubjectId} />
+      <ChapterPicker subject={subject} level={level} value={chapterId} onChange={setChapterId} />
       <FlashcardDeck
-        cards={subject.flashcards}
+        cards={content?.cards ?? NO_CARDS}
         color={subject.color}
-        label={subject.short ?? subject.name}
-        onMastered={(n) => recordFlashcards(subjectId, n)}
-      />
-      <Muted style={{ marginTop: 16, textAlign: 'center' }}>Want cards for one chapter? Open it from the syllabus.</Muted>
-      <Button
-        title="📚 Browse chapters"
-        variant="secondary"
-        onPress={() => router.push({ pathname: '/tutor', params: { subject: subjectId } })}
-        style={{ marginTop: 8 }}
+        label={chapter?.title ?? ''}
+        onMastered={(n) => chapterId && recordFlashcards(`${subject.id}:${chapterId}`, n)}
       />
     </Screen>
   );

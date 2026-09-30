@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { Level, Subject, SUBJECTS } from '../data/subjects';
 
@@ -24,14 +25,27 @@ export function useMySubjects(): { list: MySubject[]; chosen: boolean; levelOf: 
   return { list, chosen, levelOf };
 }
 
-/** Picks the subject a screen should open on: the one passed in, else the student's first subject. */
+// The subject last chosen on any screen, so the Cards and Quiz tabs stay in sync.
+let lastSubject: string | undefined;
+
+/** Picks the subject a screen should open on: the one passed in, else the last used, else the first. */
 export function useSubjectSelection(param: string | undefined) {
   const { list } = useMySubjects();
   const first = list[0]?.subject.id ?? SUBJECTS[0].id;
-  const [id, setId] = useState(param ?? first);
+  const [id, setIdState] = useState(param ?? lastSubject ?? first);
+  const setId = (next: string) => {
+    lastSubject = next;
+    setIdState(next);
+  };
   useEffect(() => {
     if (param) setId(param);
-  }, [param]);
+  }, [param]); // eslint-disable-line react-hooks/exhaustive-deps
+  // When a tab is revisited, follow the subject chosen elsewhere in the meantime.
+  useFocusEffect(
+    useCallback(() => {
+      if (lastSubject && lastSubject !== id) setIdState(lastSubject);
+    }, [id]),
+  );
   // If the student removes the current subject from "My subjects", move to one they take.
   useEffect(() => {
     if (!list.some((m) => m.subject.id === id)) setId(first);

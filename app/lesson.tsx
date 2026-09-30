@@ -1,21 +1,33 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import Avatar from '../components/Avatar';
 import Diagram from '../components/econ/Diagram';
 import { Body, Button, Card, Muted, Screen, Title } from '../components/UI';
 import { useApp } from '../context/AppContext';
-import { findChapter, getSubject } from '../data/subjects';
+import { chapterContent, findChapter, getSubject, lessonKey, unitOverview } from '../data/subjects';
 import { getProgress, recordLesson } from '../services/progress';
 import { useSpeaker } from '../services/useSpeaker';
 
-/** Plays one lesson step by step with the avatar reading it aloud. ?subject=econ&lesson=econ-elasticity */
+/**
+ * Plays a lesson step by step with the avatar reading it aloud.
+ * ?subject=econ&chapter=2.5  → the chapter's lesson
+ * ?subject=econ&unit=2       → the unit overview
+ */
 export default function LessonScreen() {
   const { colors } = useApp();
-  const params = useLocalSearchParams<{ subject?: string; lesson?: string; chapter?: string }>();
+  const params = useLocalSearchParams<{ subject?: string; chapter?: string; unit?: string }>();
   const subject = getSubject(params.subject);
   const found = findChapter(subject, params.chapter);
-  const lesson = subject.lessons.find((l) => l.id === params.lesson) ?? null;
+  const unit = subject.units.find((u) => u.id === params.unit);
+  const lesson = useMemo(() => {
+    if (found) {
+      const c = chapterContent(subject.id, found.chapter.id);
+      return c ? { id: lessonKey(subject.id, found.chapter.id), title: found.chapter.title, steps: c.lesson, diagrams: c.diagrams } : null;
+    }
+    const overview = unit ? unitOverview(subject.id, unit.id) : null;
+    return unit && overview ? { id: `unit:${subject.id}:${unit.id}`, title: `Overview: ${unit.title}`, steps: overview, diagrams: undefined } : null;
+  }, [subject.id, found?.chapter.id, unit?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   const [step, setStep] = useState(0);
   const [voiceOn, setVoiceOn] = useState(true);
   const { speaking, say, stop } = useSpeaker();
@@ -48,7 +60,7 @@ export default function LessonScreen() {
     return (
       <Screen>
         {header}
-        <Muted>Lesson not found.</Muted>
+        <Muted>This lesson isn’t available yet.</Muted>
       </Screen>
     );
   }
@@ -111,19 +123,19 @@ export default function LessonScreen() {
         />
       </View>
 
-      {last && (
+      {last && found && (
         <Card style={{ marginTop: 12 }}>
           <Body style={{ fontWeight: '700' }}>🎉 Lesson complete! Lock it in:</Body>
           <View style={[styles.row, { marginTop: 10 }]}>
             <Button
               title="🃏 Flashcards"
               variant="secondary"
-              onPress={() => router.replace({ pathname: '/flashcards', params: { subject: subject.id } })}
+              onPress={() => router.replace({ pathname: '/flashcards', params: { subject: subject.id, chapter: found?.chapter.id } })}
               style={{ flex: 1 }}
             />
             <Button
               title="📝 Quiz"
-              onPress={() => router.replace({ pathname: '/quiz', params: { subject: subject.id } })}
+              onPress={() => router.replace({ pathname: '/quiz', params: { subject: subject.id, chapter: found?.chapter.id } })}
               style={{ flex: 1 }}
             />
           </View>

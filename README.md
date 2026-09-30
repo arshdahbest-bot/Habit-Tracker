@@ -10,27 +10,28 @@ iPhone, Android and the web from one codebase and can be published to the App St
 | 🏠 **Home** | Add your name and photo (it becomes your tutor avatar), light/dark switch, and **My IB subjects** with SL/HL badges and chapter progress. |
 | 🎯 **My IB subjects** (from Home) | Pick your 6 subjects + TOK and set each to **SL or HL**. SL hides HL-only chapters. It checks for 6 subjects with 3–4 at HL. |
 | 🎨 **Customize** (from Home) | Tutor name; app colour, avatar colour, accessory, shape, frame and cartoon filter; avatar voice, speed and pitch. |
-| 🧑‍🏫 **Tutor** | The full **IB syllabus** for each subject, unit by unit. Chapters with a 📘 have a built-in lesson your avatar reads aloud; tick any chapter off as **studied** to track your progress. |
-| 🃏 **Cards** / 📝 **Quiz** | Built-in flashcards and IB-style quizzes for every subject; quiz results show an estimated IB grade (1–7). |
+| 🧑‍🏫 **Tutor** | The full **IB syllabus** for each subject, unit by unit. Every unit has an overview lesson and every chapter has its own lesson that your avatar reads aloud; tick any chapter off as **studied** to track your progress. |
+| 🃏 **Cards** / 📝 **Quiz** | Pick a subject, then a chapter: every chapter has its own flashcards and quiz that only cover that topic. Answer options are shuffled each attempt; results show an estimated IB grade (1–7). |
 | 📊 **Progress** | Study streak, chapters studied, a 7-day activity chart, estimated grade per subject and a predicted Diploma points total. |
 | 🎮 **Break** | Play **Snake** or **Ping Pong** — **once per day** — then see **today's leaderboard**. |
 
-**Subjects (14):** English A: Language & Literature · French B · Hindi B · Economics · Business Management ·
+**Subjects (15):** English A: Language & Literature · French B · Hindi B · Economics · Business Management ·
 History · Psychology · Biology · Chemistry · Physics · Computer Science · Environmental Systems & Societies ·
-Maths AA · Theory of Knowledge. Chapter lists are in `data/syllabus.ts` (sciences follow the guides for first
+Maths AA · Maths AI · Theory of Knowledge. Chapter lists are in `data/syllabus.ts` (sciences follow the guides for first
 assessment 2025, ESS 2026, CS and Psychology 2027). **Check them against the current IB subject guides
 before publishing** — the IB revises courses regularly.
 
-Lessons, flashcards and quizzes are in `data/subjects.ts` and `data/moreSubjects.ts`. To add a lesson,
-write its steps there and link it to a chapter with `chapters: ['2.5']`. Everything runs on the phone:
+Lessons, flashcards and quizzes live in `data/content/<subject>.ts`, one entry per chapter written as
+`C(lessonSteps, cards, quiz, diagrams?)`, plus a short overview per unit. After editing, run
+`npx tsx scripts/check-content.ts` — it checks that every syllabus chapter has a lesson, cards and a quiz
+with valid answers. Everything runs on the phone:
 no accounts, no API keys and no running costs (the optional Supabase leaderboard has a free tier).
 
 **Economics diagrams:** Economics lessons show IB-style diagrams under each step (demand, supply,
 equilibrium, demand shifts, excess supply, PED comparisons with worked percentages, perfectly
 elastic/inelastic demand, PED along a straight-line demand curve, total revenue, negative
 externalities). Chapters 2.1–2.3 include an interactive **Diagram Lab**, and chapter 2.5 a **PED calculator**. Diagrams live in `components/econ/`; attach one to a lesson step with the
-`diagrams` field in `data/subjects.ts`.
-To add more content, edit **`data/subjects.ts`** — every screen reads from that one file.
+`diagrams` field of a chapter in `data/content/econ.ts`.
 
 ## Run it
 
@@ -68,10 +69,12 @@ components/
   games/PongGame.tsx
   econ/                economics graphs, diagram presets, Diagram Lab, PED calculator
   FlashcardDeck.tsx / QuizRunner.tsx   shared flashcard and quiz components
+  ChapterPicker.tsx    chapter chooser for Cards and Quiz
 context/AppContext.tsx light/dark theme + saved profile
 data/syllabus.ts       IB units and chapters for every subject (HL-only chapters marked)
-data/subjects.ts       subjects, built-in lessons, flashcards and quiz questions
-data/moreSubjects.ts   content for English A, French B, Hindi B, BM, Psychology, CS, ESS, TOK
+data/subjects.ts       subject list and helpers (chapterContent, unitOverview, chaptersFor)
+data/content/          per-chapter lessons, flashcards and quizzes, one file per subject
+scripts/check-content.ts  checks every chapter has complete content
 services/progress.ts   personal progress tracking (stored on the device)
 services/useSpeaker.ts avatar voice (text-to-speech with the chosen voice settings)
 services/dailyGame.ts  once-a-day lock + leaderboard (offline or Supabase)

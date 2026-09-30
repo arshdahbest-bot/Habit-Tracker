@@ -6,6 +6,18 @@ import type { QuizQuestion } from '../data/subjects';
 import { estimateGrade } from '../services/grades';
 import { Body, Button, Card, Muted } from './UI';
 
+/** Shuffles each question's options (keeping track of the right answer) so its position varies. */
+function shuffleOptions(questions: QuizQuestion[]): QuizQuestion[] {
+  return questions.map((q) => {
+    const order = q.options.map((_, i) => i);
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    return { ...q, options: order.map((i) => q.options[i]), answer: order.indexOf(q.answer) };
+  });
+}
+
 function buzz(success: boolean) {
   if (Platform.OS === 'web') return;
   Haptics.notificationAsync(
@@ -15,7 +27,7 @@ function buzz(success: boolean) {
 
 /** Runs a multiple-choice quiz with feedback after each answer and a results card. */
 export default function QuizRunner({
-  questions,
+  questions: source,
   color,
   best,
   onFinish,
@@ -29,12 +41,18 @@ export default function QuizRunner({
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
+  const [questions, setQuestions] = useState(() => shuffleOptions(source));
 
-  useEffect(() => {
+  function restart() {
+    setQuestions(shuffleOptions(source));
     setIndex(0);
     setSelected(null);
     setScore(0);
-  }, [questions]);
+  }
+
+  useEffect(() => {
+    restart();
+  }, [source]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const total = questions.length;
   const finished = index >= total;
@@ -80,15 +98,7 @@ export default function QuizRunner({
         <Muted style={{ fontSize: 11, marginBottom: 12, textAlign: 'center' }}>
           Estimate only — real IB grade boundaries change every session.
         </Muted>
-        <Button
-          title="Try again"
-          onPress={() => {
-            setIndex(0);
-            setSelected(null);
-            setScore(0);
-          }}
-          style={{ alignSelf: 'stretch' }}
-        />
+        <Button title="Try again" onPress={restart} style={{ alignSelf: 'stretch' }} />
       </Card>
     );
   }
