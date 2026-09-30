@@ -249,7 +249,7 @@ const more: Record<string, MoreContent> = {
       'Worked example: f(x) = 3x − 2 and g(x) = x squared. Then f of g of x = 3x squared − 2, while g of f of x = (3x − 2) squared. They differ.',
       'Worked example: find the inverse of f(x) = (2x + 1) over (x − 3). Swap: x = (2y + 1) over (y − 3). Rearrange: xy − 3x = 2y + 1, so y = (3x + 1) over (x − 2).',
       'Restricting the domain can create an inverse: f(x) = x squared has an inverse root x only if the domain is x ≥ 0.',
-      'Check: f of f inverse of x should equal x. The graphs of f and its inverse are reflections in y = x and meet on that line if they meet at all.',
+      'Check: f of f inverse of x should equal x. The graphs of f and its inverse are reflections in y = x. For an increasing function, they can only meet on that line.',
     ],
     [
       ['Inverse of (2x + 1)/(x − 3)', '(3x + 1)/(x − 2).'],
@@ -575,7 +575,7 @@ const more: Record<string, MoreContent> = {
       ['Mid-interval value', 'Midpoint of a class, used for grouped mean estimates.'],
       ['Box plot five numbers', 'Minimum, Q1, median, Q3, maximum.'],
       ['Median from cumulative frequency', 'Read at n/2 on the vertical axis.'],
-      ['Effect of multiplying data by k', 'Mean and SD both multiply by k.'],
+      ['Effect of multiplying data by k', 'Mean × k; SD × |k|.'],
     ],
     [
       ['10 values at 155 and 15 at 165. Mean =', '161', ['160', '162', '165'], '(1550 + 2475) ÷ 25.'],
@@ -689,19 +689,19 @@ const more: Record<string, MoreContent> = {
       'Worked example: f(x) = 3x squared over 8 for 0 ≤ x ≤ 2. Check: the integral from 0 to 2 is x cubed over 8, which is 1. E(X) = integral of 3x cubed over 8 = 3 times 16 over 32 = 1.5.',
       'P(X < 1) is the integral from 0 to 1 of 3x squared over 8, which is one eighth.',
       'The median m solves the integral from the lower limit to m of f(x) = 0.5. Here m cubed over 8 = 0.5, so m = cube root 4, about 1.59.',
-      'The mode is where f(x) is greatest. For linear combinations of independent variables: Var(X ± Y) = Var(X) + Var(Y).',
+      'The mode is where f(x) is greatest. For a linear transformation: E(aX + b) = aE(X) + b and Var(aX + b) = a squared times Var(X).',
     ],
     [
       ['Median of a continuous RV', 'Solve ∫ f(x) dx from the lower limit to m = 0.5.'],
       ['Mode of a continuous RV', 'x-value where f(x) is maximum.'],
       ['Var(X) shortcut', 'E(X²) − [E(X)]².'],
-      ['Var(X − Y) for independent X, Y', 'Var(X) + Var(Y).'],
+      ['Var(aX + b)', 'a²Var(X).'],
     ],
     [
       ['f(x) = 3x²/8 on [0, 2]. E(X) =', '1.5', ['1', '2', '0.75'], '∫ 3x³/8 dx from 0 to 2.'],
       ['Same pdf: P(X < 1) =', '1/8', ['1/2', '3/8', '1/4'], '[x³/8] from 0 to 1.'],
       ['Same pdf: the median is', '∛4 ≈ 1.59', ['1', '1.5', '2'], 'm³/8 = 0.5.'],
-      ['Var(X) = 4, Var(Y) = 9, independent. Var(X − Y) =', '13', ['5', '−5', '36'], 'Variances add.'],
+      ['Var(X) = 4. Var(3X − 1) =', '36', ['11', '12', '35'], '3² × 4; subtracting 1 does not change the spread.'],
     ],
   ),
   '5.1-5.4': M(

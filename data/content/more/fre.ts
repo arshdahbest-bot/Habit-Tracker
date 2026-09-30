@@ -186,19 +186,19 @@ const more: Record<string, MoreContent> = {
   ),
   AS1: M(
     [
-      'Paper 1 lasts 1 hour 15 minutes at both SL and HL. You choose one of three tasks and must pick an appropriate text type.',
+      'Paper 1 lasts 1 hour 15 minutes at SL, for 250 to 400 words, and 1 hour 30 minutes at HL, for 450 to 600 words. You choose one of three tasks and must pick an appropriate text type.',
       'Plan: identify audience, purpose, context and text type. Brainstorm vocabulary and connectives, and plan paragraphs before writing.',
       'Show range: include different tenses, the subjunctive, conditional, relative pronouns and idiomatic expressions, but accuracy matters more than complexity.',
       'Common mistakes to check: gender agreement, verb endings, accents and word order with pronouns, like je le lui ai donné.',
     ],
     [
-      ['Paper 1 time', '1 hour 15 minutes (SL and HL).'],
+      ['Paper 1 time', '1 hour 15 minutes at SL; 1 hour 30 minutes at HL.'],
       ['Planning checklist', 'Audience, purpose, context, text type.'],
       ['Range vs accuracy', 'Use a range of structures, but accuracy comes first.'],
       ['Final check', 'Agreements, verb endings, accents, pronoun order.'],
     ],
     [
-      ['How long is Paper 1?', '1 hour 15 minutes', ['2 hours', '45 minutes', '1 hour 30 minutes'], 'The same at SL and HL.'],
+      ['How long is Paper 1 at HL?', '1 hour 30 minutes', ['1 hour 15 minutes', '2 hours', '45 minutes'], 'SL Paper 1 is 1 hour 15 minutes.'],
       ['What should you identify first when planning?', 'Audience, purpose, context and text type', ['The word count only', 'Difficult vocabulary', 'Your conclusion'], 'These shape register and format.'],
       ['Which order is correct?', 'Je le lui ai donné.', ['Je lui le ai donné.', 'Je ai le lui donné.', 'Le je lui ai donné.'], 'Le before lui.'],
       ['Showing range means using…', 'Varied tenses and structures accurately', ['Only simple sentences', 'Only English words', 'As many rare words as possible'], 'Accuracy plus variety.'],
