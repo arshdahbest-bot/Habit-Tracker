@@ -4,11 +4,11 @@ import { LayoutChangeEvent, Platform, Pressable, StyleSheet, Text, View } from '
 import Svg, { G, Line, Rect, Text as SvgText } from 'react-native-svg';
 import { Body, Card, Muted, Screen, Title } from '../../components/UI';
 import { useApp } from '../../context/AppContext';
-import { chaptersFor, SUBJECTS } from '../../data/subjects';
+import { chaptersFor, SUBJECTS, byGroup } from '../../data/subjects';
 import { chapterStudied } from '../../services/chapters';
 import { estimateGrade } from '../../services/grades';
 import { useMySubjects } from '../../services/mySubjects';
-import { getProgress, lastDays, ProgressData, streak } from '../../services/progress';
+import { focusThisWeek, getProgress, lastDays, ProgressData, streak } from '../../services/progress';
 
 export default function ProgressScreen() {
   const { colors, profile } = useApp();
@@ -53,6 +53,8 @@ export default function ProgressScreen() {
         <Tile emoji="📚" value={`${totalStudied}/${totalChapters}`} label="chapters studied" />
         <Tile emoji="📝" value={quizAvg === null ? '–' : `${quizAvg}%`} label="avg quiz score" />
         <Tile emoji="🎓" value={predicted === null ? '–' : `${predicted}/${graded.length * 7}`} label="predicted points" />
+        <Tile emoji="⏱️" value={`${focusThisWeek(data)}`} label="focus minutes this week" />
+        <Tile emoji="🃏" value={`${Object.values(data.cardsMastered).reduce((n, x) => n + x, 0)}`} label="flashcards mastered" />
       </View>
       <Muted style={{ marginTop: -4, marginBottom: 12, fontSize: 12 }}>
         {predicted === null
@@ -70,7 +72,10 @@ export default function ProgressScreen() {
 
       <Card>
         <Body style={{ fontWeight: '800', marginBottom: 8 }}>By subject</Body>
-        {stats.map(({ s, levelLabel, chapters, studied, avg, grade }) => {
+        {byGroup(stats, (x) => x.s).map(({ group, items }) => (
+          <View key={group}>
+            <Text style={[styles.group, { color: colors.textMuted }]}>{group}</Text>
+            {items.map(({ s, levelLabel, chapters, studied, avg, grade }) => {
           const pct = chapters ? Math.round((studied / chapters) * 100) : 0;
           return (
             <View key={s.id} style={{ marginBottom: 14 }}>
@@ -89,7 +94,9 @@ export default function ProgressScreen() {
               </Muted>
             </View>
           );
-        })}
+            })}
+          </View>
+        ))}
       </Card>
 
       <Card>
@@ -220,6 +227,7 @@ function ActivityChart({ days }: { days: { day: string; label: string; count: nu
 }
 
 const styles = StyleSheet.create({
+  group: { fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 },
   tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 12 },
   tile: { flexGrow: 1, flexBasis: '45%', borderWidth: 1, borderRadius: 14, padding: 12 },
   subjectRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },

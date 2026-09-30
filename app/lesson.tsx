@@ -5,7 +5,7 @@ import Avatar from '../components/Avatar';
 import Diagram from '../components/econ/Diagram';
 import { Body, Button, Card, Muted, Screen, Title } from '../components/UI';
 import { useApp } from '../context/AppContext';
-import { chapterContent, findChapter, getSubject, lessonKey, unitOverview } from '../data/subjects';
+import { chapterContent, findChapter, getSubject, lesson2Key, lessonKey, unitOverview } from '../data/subjects';
 import { getProgress, recordLesson } from '../services/progress';
 import { useSpeaker } from '../services/useSpeaker';
 
@@ -16,18 +16,24 @@ import { useSpeaker } from '../services/useSpeaker';
  */
 export default function LessonScreen() {
   const { colors } = useApp();
-  const params = useLocalSearchParams<{ subject?: string; chapter?: string; unit?: string }>();
+  const params = useLocalSearchParams<{ subject?: string; chapter?: string; unit?: string; part?: string }>();
+  const part2 = params.part === '2';
   const subject = getSubject(params.subject);
   const found = findChapter(subject, params.chapter);
   const unit = subject.units.find((u) => u.id === params.unit);
   const lesson = useMemo(() => {
     if (found) {
       const c = chapterContent(subject.id, found.chapter.id);
+      if (part2) {
+        return c?.lesson2
+          ? { id: lesson2Key(subject.id, found.chapter.id), title: `Deeper dive: ${found.chapter.title}`, steps: c.lesson2, diagrams: undefined }
+          : null;
+      }
       return c ? { id: lessonKey(subject.id, found.chapter.id), title: found.chapter.title, steps: c.lesson, diagrams: c.diagrams } : null;
     }
     const overview = unit ? unitOverview(subject.id, unit.id) : null;
     return unit && overview ? { id: `unit:${subject.id}:${unit.id}`, title: `Overview: ${unit.title}`, steps: overview, diagrams: undefined } : null;
-  }, [subject.id, found?.chapter.id, unit?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [subject.id, found?.chapter.id, unit?.id, part2]); // eslint-disable-line react-hooks/exhaustive-deps
   const [step, setStep] = useState(0);
   const [voiceOn, setVoiceOn] = useState(true);
   const { speaking, say, stop } = useSpeaker();
@@ -51,9 +57,19 @@ export default function LessonScreen() {
   };
 
   const header = (
-    <Pressable onPress={back}>
-      <Text style={{ color: colors.primary, fontWeight: '700', marginBottom: 8 }}>‹ Back</Text>
-    </Pressable>
+    <View style={styles.headerRow}>
+      <Pressable onPress={back}>
+        <Text style={{ color: colors.primary, fontWeight: '700' }}>‹ Back</Text>
+      </Pressable>
+      {found && (
+        <Pressable
+          onPress={() => router.push({ pathname: '/note', params: { subject: subject.id, chapter: found.chapter.id } })}
+          hitSlop={8}
+        >
+          <Text style={{ color: colors.primary, fontWeight: '700' }}>🗒️ Take a note</Text>
+        </Pressable>
+      )}
+    </View>
   );
 
   if (!lesson) {
@@ -70,7 +86,7 @@ export default function LessonScreen() {
   return (
     <Screen>
       {header}
-      <Title subtitle={`${subject.emoji} ${subject.name}${found ? ` · ${found.chapter.id}` : ''}`}>
+      <Title subtitle={`${subject.emoji} ${subject.name}${found ? ` · ${found.chapter.id} · Lesson ${part2 ? 2 : 1}` : ''}`}>
         {lesson.title}
       </Title>
 
@@ -126,6 +142,17 @@ export default function LessonScreen() {
       {last && found && (
         <Card style={{ marginTop: 12 }}>
           <Body style={{ fontWeight: '700' }}>🎉 Lesson complete! Lock it in:</Body>
+          {!part2 && chapterContent(subject.id, found.chapter.id)?.lesson2 && (
+            <Button
+              title="📗 Next: Lesson 2 · Deeper dive"
+              variant="secondary"
+              onPress={() => {
+                stop();
+                router.replace({ pathname: '/lesson', params: { subject: subject.id, chapter: found.chapter.id, part: '2' } });
+              }}
+              style={{ marginTop: 10 }}
+            />
+          )}
           <View style={[styles.row, { marginTop: 10 }]}>
             <Button
               title="🃏 Flashcards"
@@ -146,6 +173,7 @@ export default function LessonScreen() {
 }
 
 const styles = StyleSheet.create({
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
   bubble: { borderWidth: 2, borderRadius: 18, padding: 18, minHeight: 140 },
   tail: {
     position: 'absolute',

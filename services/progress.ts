@@ -11,11 +11,12 @@ export type ProgressData = {
   cardsMastered: Record<string, number>; // subjectId -> best number of cards mastered
   quizzes: QuizResult[];
   activity: Record<string, number>; // day -> number of study actions
+  focusMinutes: Record<string, number>; // day -> minutes of focus-timer study
 };
 
 const KEY = 'progress:v1';
 
-const empty = (): ProgressData => ({ lessonsDone: {}, chaptersDone: {}, cardsMastered: {}, quizzes: [], activity: {} });
+const empty = (): ProgressData => ({ lessonsDone: {}, chaptersDone: {}, cardsMastered: {}, quizzes: [], activity: {}, focusMinutes: {} });
 
 export async function getProgress(): Promise<ProgressData> {
   try {
@@ -66,6 +67,25 @@ export function recordQuiz(subjectId: string, score: number, total: number, chap
     p.quizzes.push({ subjectId, chapterId, score, total, day: todayKey(), at: Date.now() });
     if (p.quizzes.length > 200) p.quizzes = p.quizzes.slice(-200);
   });
+}
+
+/** Minutes studied with the focus timer. */
+export function recordFocus(minutes: number) {
+  return update((p) => {
+    const day = todayKey();
+    p.focusMinutes[day] = (p.focusMinutes[day] ?? 0) + minutes;
+  });
+}
+
+/** Focus minutes over the last `n` days, including today. */
+export function focusThisWeek(p: ProgressData, n = 7) {
+  let total = 0;
+  for (let i = 0; i < n; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    total += p.focusMinutes?.[todayKey(d)] ?? 0;
+  }
+  return total;
 }
 
 export async function resetProgress() {

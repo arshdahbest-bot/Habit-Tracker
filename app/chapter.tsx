@@ -5,9 +5,10 @@ import DiagramLab from '../components/econ/DiagramLab';
 import PedCalculator from '../components/econ/PedCalculator';
 import { Badge, Body, Button, Card, Muted, Screen, Title } from '../components/UI';
 import { useApp } from '../context/AppContext';
-import { chapterContent, findChapter, getSubject } from '../data/subjects';
+import { chapterContent, findChapter, getSubject, lesson2Key, lessonKey } from '../data/subjects';
 import { chapterStudied } from '../services/chapters';
 import { useMySubjects } from '../services/mySubjects';
+import { notePreview, useNotes } from '../services/notes';
 import { getProgress, ProgressData, setChapterStudied } from '../services/progress';
 
 // Interactive tools shown on specific chapters.
@@ -23,6 +24,7 @@ export default function ChapterScreen() {
   const { levelOf } = useMySubjects();
   const level = levelOf(subject.id);
   const [progress, setProgress] = useState<ProgressData | null>(null);
+  const { notes } = useNotes();
 
   useFocusEffect(
     useCallback(() => {
@@ -41,6 +43,7 @@ export default function ChapterScreen() {
   const content = chapterContent(subject.id, chapter.id);
   const Tool = TOOLS[subject.id]?.[chapter.id];
   const studied = chapterStudied(progress, subject, chapter.id);
+  const chapterNotes = notes.filter((n) => n.subjectId === subject.id && n.chapterId === chapter.id);
 
   async function toggleStudied() {
     await setChapterStudied(subject.id, chapter.id, !studied);
@@ -62,19 +65,30 @@ export default function ChapterScreen() {
       <Card>
         <Body style={{ fontWeight: '800', marginBottom: 8 }}>Learn</Body>
         {content ? (
-          <Pressable
-            onPress={() => router.push({ pathname: '/lesson', params: { subject: subject.id, chapter: chapter.id } })}
-            style={[styles.item, { borderColor: colors.border }]}
-          >
-            <Text style={{ fontSize: 20 }}>📘</Text>
-            <View style={{ flex: 1 }}>
-              <Body style={{ fontWeight: '700' }}>Lesson: {chapter.title}</Body>
-              <Muted>
-                {content.lesson.length} steps · read aloud{content.diagrams ? ' · 📈 diagrams' : ''}
-              </Muted>
-            </View>
-            <Text style={{ color: studied ? colors.success : colors.textMuted, fontSize: 18 }}>{studied ? '✓' : '▶'}</Text>
-          </Pressable>
+          [
+            { part: '1', icon: '📘', name: 'Lesson 1 · Core ideas', steps: content.lesson, key: lessonKey(subject.id, chapter.id), diagrams: !!content.diagrams },
+            ...(content.lesson2
+              ? [{ part: '2', icon: '📗', name: 'Lesson 2 · Deeper dive & exam skills', steps: content.lesson2, key: lesson2Key(subject.id, chapter.id), diagrams: false }]
+              : []),
+          ].map((l) => {
+            const done = !!progress?.lessonsDone[l.key];
+            return (
+              <Pressable
+                key={l.part}
+                onPress={() => router.push({ pathname: '/lesson', params: { subject: subject.id, chapter: chapter.id, part: l.part } })}
+                style={[styles.item, { borderColor: colors.border }]}
+              >
+                <Text style={{ fontSize: 20 }}>{l.icon}</Text>
+                <View style={{ flex: 1 }}>
+                  <Body style={{ fontWeight: '700' }}>{l.name}</Body>
+                  <Muted>
+                    {l.steps.length} steps · read aloud{l.diagrams ? ' · 📈 diagrams' : ''}
+                  </Muted>
+                </View>
+                <Text style={{ color: done ? colors.success : colors.textMuted, fontSize: 18 }}>{done ? '✓' : '▶'}</Text>
+              </Pressable>
+            );
+          })
         ) : (
           <Muted>This chapter’s lesson is coming soon. Study it from your textbook, then tick it off below.</Muted>
         )}
@@ -106,6 +120,38 @@ export default function ChapterScreen() {
       </Card>
 
       {Tool && <Tool />}
+
+      <Card>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+          <Body style={{ fontWeight: '800', flex: 1 }}>🗒️ My notes</Body>
+          <Pressable
+            onPress={() => router.push({ pathname: '/note', params: { subject: subject.id, chapter: chapter.id } })}
+            hitSlop={8}
+          >
+            <Text style={{ color: colors.primary, fontWeight: '700' }}>＋ Add note</Text>
+          </Pressable>
+        </View>
+        {chapterNotes.length === 0 ? (
+          <Muted>Write down key terms, examples and anything you want to remember from this chapter.</Muted>
+        ) : (
+          chapterNotes.map((n) => (
+            <Pressable
+              key={n.id}
+              onPress={() => router.push({ pathname: '/note', params: { id: n.id } })}
+              style={[styles.item, { borderColor: colors.border }]}
+            >
+              <Text style={{ fontSize: 16 }}>{n.pinned ? '📌' : '📝'}</Text>
+              <View style={{ flex: 1 }}>
+                <Body style={{ fontWeight: '700' }} >{notePreview(n)}</Body>
+                {!!n.body.trim() && (
+                  <Muted style={{ marginTop: 2 }}>{n.body.trim().replace(/\s+/g, ' ').slice(0, 90)}</Muted>
+                )}
+              </View>
+              <Text style={{ color: colors.textMuted, fontSize: 18 }}>›</Text>
+            </Pressable>
+          ))
+        )}
+      </Card>
     </Screen>
   );
 }

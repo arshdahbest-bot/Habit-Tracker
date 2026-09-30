@@ -2,12 +2,15 @@ import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '../context/AppContext';
+import Background from './Background';
+import { byGroup, groupShort } from '../data/subjects';
 import { useMySubjects } from '../services/mySubjects';
 
 export function Screen({ children, scroll = true }: { children: React.ReactNode; scroll?: boolean }) {
   const { colors } = useApp();
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'left', 'right']}>
+      <Background />
       {scroll ? (
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           {children}
@@ -80,12 +83,19 @@ export function Muted({ children, style }: { children: React.ReactNode; style?: 
   return <Text style={[{ color: colors.textMuted, fontSize: 14 }, style]}>{children}</Text>;
 }
 
+// "Group 1 · …" -> "G1", "Groups 3 & 4 · …" -> "G3/4", "DP Core" -> "Core".
+const groupTag = (group: string) =>
+  groupShort(group).replace(/^Groups? /, 'G').replace(' & ', '/').replace('DP Core', 'Core');
+
 export function SubjectPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
   const { colors } = useApp();
   const { list } = useMySubjects();
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16, flexGrow: 0 }}>
-      {list.map(({ subject: s, levelLabel }) => {
+      {byGroup(list, (m) => m.subject).map(({ group, items }) => (
+        <View key={group} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={[styles.groupLabel, { color: colors.textMuted }]}>{groupTag(group)}</Text>
+          {items.map(({ subject: s, levelLabel }) => {
         const active = s.id === value;
         return (
           <Pressable
@@ -102,7 +112,9 @@ export function SubjectPicker({ value, onChange }: { value: string; onChange: (i
             </Text>
           </Pressable>
         );
-      })}
+          })}
+        </View>
+      ))}
     </ScrollView>
   );
 }
@@ -119,5 +131,6 @@ const styles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 40 },
   card: { borderRadius: 16, padding: 16, borderWidth: 1, marginBottom: 12 },
   button: { paddingVertical: 14, paddingHorizontal: 18, borderRadius: 12, alignItems: 'center' },
+  groupLabel: { fontSize: 10, fontWeight: '900', marginRight: 6, opacity: 0.8 },
   chip: { paddingVertical: 8, paddingHorizontal: 14, borderRadius: 20, borderWidth: 1, marginRight: 8 },
 });
