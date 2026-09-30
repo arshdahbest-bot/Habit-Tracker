@@ -186,19 +186,19 @@ const more: Record<string, MoreContent> = {
   ),
   AS1: M(
     [
-      'Paper 1 lasts 1 hour 15 minutes at SL and HL. Choose the task you can write best, not the one that sounds most impressive.',
+      'Paper 1 lasts 1 hour 15 minutes at SL and 1 hour 30 minutes at HL. Choose the task you can write best, not the one that sounds most impressive.',
       'Plan with a quick outline: introduction, 2 or 3 body paragraphs with examples, and a conclusion that fits the text type.',
       'Show range: different tenses, चाहिए, the subjunctive, relative clauses, connectives and one or two idioms used correctly.',
       'Final check: gender agreement, the ने construction, spellings with matras, and postpositions with the oblique case.',
     ],
     [
-      ['Paper 1 time', '1 hour 15 minutes.'],
+      ['Paper 1 time', '1 hour 15 minutes at SL; 1 hour 30 minutes at HL.'],
       ['Planning outline', 'Introduction, body paragraphs, conclusion suited to text type.'],
       ['Showing range', 'Tenses, चाहिए, subjunctive, relative clauses, idioms.'],
       ['Final checklist', 'Gender, ने construction, matras, oblique case.'],
     ],
     [
-      ['How long is Paper 1?', '1 hour 15 minutes', ['2 hours', '45 minutes', '1 hour 30 minutes'], 'For SL and HL.'],
+      ['How long is Paper 1 at HL?', '1 hour 30 minutes', ['1 hour 15 minutes', '2 hours', '45 minutes'], 'SL Paper 1 is 1 hour 15 minutes.'],
       ['Which task should you choose?', 'The one you can write best', ['The longest one', 'The first one always', 'The one with most vocabulary'], 'Play to your strengths.'],
       ['Checking the ने construction means checking…', 'Verb agreement with the object in past transitive sentences', ['Spelling of names', 'Word count', 'Punctuation only'], 'A common error.'],
       ['Using one or two idioms correctly shows…', 'Range of language', ['Poor register', 'Plagiarism', 'Errors'], 'Accuracy and variety are rewarded.'],

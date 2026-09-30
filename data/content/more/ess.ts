@@ -28,19 +28,19 @@ const more: Record<string, MoreContent> = {
     [
       'Systems diagrams show storages as boxes and flows as arrows. Flows are transfers, a change in location, like water flowing downhill, or transformations, a change in state or chemical nature, like photosynthesis.',
       'Positive feedback amplifies change and pushes a system away from equilibrium, like melting Arctic ice reducing albedo and causing more warming.',
-      'Resilience is a system’s ability to recover after disturbance. Diverse systems with large storages, like rainforests, are generally more resilient.',
+      'Resilience is a system’s ability to recover after disturbance. Diverse systems with large storages, like rainforests, resist small disturbances well, but once cleared a rainforest recovers slowly because its nutrients are stored in biomass.',
       'Models simplify reality to help predictions, but they depend on assumptions and may miss important factors.',
     ],
     [
       ['Transfer vs transformation', 'Transfer: change in location. Transformation: change in state or chemical form.'],
       ['Positive feedback', 'Amplifies change, moving a system away from equilibrium.'],
       ['Resilience', 'Ability of a system to return to its original state after disturbance.'],
-      ['Isolated system', 'Exchanges neither matter nor energy — rare in nature.'],
+      ['Isolated system', 'Exchanges neither matter nor energy — does not occur naturally on Earth.'],
     ],
     [
       ['Photosynthesis in a systems diagram is a…', 'Transformation', ['Transfer', 'Storage', 'Output only'], 'Energy and matter change form.'],
       ['Melting ice reducing albedo and causing more warming is…', 'Positive feedback', ['Negative feedback', 'Steady state', 'Resilience'], 'Change is amplified.'],
-      ['Which is most resilient?', 'A diverse tropical rainforest', ['A monoculture crop', 'A small pond', 'A desert oasis'], 'Diversity and large storages aid recovery.'],
+      ['Which usually resists small disturbances best?', 'A diverse tropical rainforest', ['A monoculture crop', 'A small pond', 'A desert oasis'], 'Diversity and large storages buffer change, though cleared rainforest recovers slowly.'],
       ['A limitation of models is that they…', 'Simplify reality and depend on assumptions', ['Are always accurate', 'Cannot be used for prediction', 'Include every variable'], 'Simplification can miss key factors.'],
     ],
   ),
@@ -49,7 +49,7 @@ const more: Record<string, MoreContent> = {
       'Doughnut economics sets a social foundation, like food, water and education, and an ecological ceiling, the planetary boundaries. A safe and just space lies between them.',
       'Environmental impact assessments, EIAs, predict the effects of projects like dams or mines before approval, and suggest ways to reduce harm.',
       'Worked example: if a country’s ecological footprint is 5 global hectares per person but its biocapacity is 2, it uses resources unsustainably and relies on imports or depletes stocks.',
-      'Planetary boundaries already crossed include climate change, biosphere integrity, and biogeochemical flows of nitrogen and phosphorus.',
+      'By 2025, seven of the nine planetary boundaries had been crossed, including climate change, biosphere integrity, biogeochemical flows of nitrogen and phosphorus, and ocean acidification.',
     ],
     [
       ['Environmental impact assessment', 'Report predicting a project’s environmental effects before approval.'],
@@ -366,22 +366,22 @@ const more: Record<string, MoreContent> = {
   ),
   '6.2': M(
     [
-      'Evidence of climate change: rising average temperatures of about 1.1 to 1.2 °C since pre-industrial times, shrinking glaciers and sea ice, rising sea levels and more extreme weather.',
-      'Global warming potential compares gases with carbon dioxide: methane traps about 28 times more heat over 100 years; nitrous oxide about 265 times.',
+      'Evidence of climate change: rising average temperatures of about 1.3 °C since pre-industrial times, with 2024 alone about 1.55 °C above, shrinking glaciers and sea ice, rising sea levels and more extreme weather.',
+      'Global warming potential compares gases with carbon dioxide: methane traps about 28 times more heat over 100 years, or 27 to 30 in the latest IPCC report; nitrous oxide about 273 times.',
       'Impacts vary: low-lying countries like Bangladesh and small island states face flooding; Africa’s Sahel faces drought and food insecurity.',
       'Climate models project future warming under different emissions scenarios, but uncertainty remains over feedbacks, tipping points and human choices.',
     ],
     [
       ['Global warming potential', 'How much heat a gas traps compared with CO₂.'],
       ['GWP of methane', 'About 28 times CO₂ over 100 years.'],
-      ['Warming since pre-industrial times', 'About 1.1–1.2 °C.'],
+      ['Warming since pre-industrial times', 'About 1.3 °C.'],
       ['Sea-level rise causes', 'Thermal expansion of water and melting land ice.'],
     ],
     [
-      ['Methane’s 100-year GWP is about…', '28', ['1', '265', '1,000'], 'It traps much more heat per molecule than CO₂.'],
+      ['Methane’s 100-year GWP is about…', '28', ['1', '273', '1,000'], 'It traps much more heat per molecule than CO₂.'],
       ['Sea levels rise mainly due to…', 'Thermal expansion and melting land ice', ['Melting sea ice only', 'More rain', 'Earthquakes'], 'Warm water expands.'],
       ['Which country is highly vulnerable to sea-level rise?', 'Bangladesh', ['Switzerland', 'Mongolia', 'Nepal'], 'Much of it is low-lying delta.'],
-      ['Warming since pre-industrial times is about…', '1.1–1.2 °C', ['5 °C', '0.1 °C', '10 °C'], 'Most has occurred since 1950.'],
+      ['Warming since pre-industrial times is about…', '1.3 °C', ['5 °C', '0.1 °C', '10 °C'], 'Most has occurred since 1950; 2024 alone was about 1.55 °C.'],
     ],
   ),
   '6.3': M(

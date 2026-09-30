@@ -66,7 +66,7 @@ const more: Record<string, MoreContent> = {
   ),
   OT2: M(
     [
-      'Real-life situation: some languages have many words for snow or for family relationships. Does having more words mean speakers notice more distinctions?',
+      'Real-life situation: the popular claim that Inuit languages have hundreds of words for snow is often exaggerated, but languages really do differ in their words for colours or family relationships. Does having more words mean speakers notice more distinctions?',
       'Euphemisms soften reality, like “collateral damage” for civilian deaths, showing how language can hide or shape knowledge.',
       'Scientific and mathematical language aims to be precise and universal, while poetic language uses ambiguity to create meaning.',
       'Knowledge question: “To what extent does the language we speak limit what we can know?”',
@@ -187,7 +187,7 @@ const more: Record<string, MoreContent> = {
   AOK3: M(
     [
       'Thomas Kuhn argued that science goes through periods of “normal science” and occasional revolutions, paradigm shifts, like the move from an Earth-centred to a Sun-centred universe.',
-      'The problem of induction: however many white swans we observe, we can’t prove all swans are white; one black swan disproves it.',
+      'The problem of induction: however many white swans we observe, we can’t prove all swans are white. Karl Popper’s answer was falsification: one black swan is enough to disprove it.',
       'Real-life situation: continental drift was proposed by Alfred Wegener in 1912 but rejected until plate tectonics evidence emerged in the 1960s.',
       'Knowledge question: “To what extent is the scientific community’s acceptance needed for something to count as scientific knowledge?”',
     ],
@@ -199,7 +199,7 @@ const more: Record<string, MoreContent> = {
     ],
     [
       ['Who proposed the idea of paradigm shifts?', 'Thomas Kuhn', ['Karl Popper', 'Isaac Newton', 'E.H. Carr'], 'In The Structure of Scientific Revolutions.'],
-      ['Seeing a black swan disproving “all swans are white” illustrates…', 'The problem of induction', ['Deduction', 'Paradigm shift', 'Peer review'], 'Observations can’t prove universal claims.'],
+      ['One black swan disproving “all swans are white” illustrates…', 'Falsification', ['Deduction', 'Paradigm shift', 'Peer review'], 'Popper: a single counterexample can refute a universal claim.'],
       ['Wegener’s continental drift was accepted after evidence for…', 'Plate tectonics', ['Relativity', 'Evolution', 'Quantum theory'], 'In the 1960s.'],
       ['A testable prediction in science is a…', 'Hypothesis', ['Law', 'Paradigm', 'Axiom'], 'It can be tested by experiment.'],
     ],

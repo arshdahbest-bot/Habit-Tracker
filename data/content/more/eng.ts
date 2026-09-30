@@ -46,7 +46,7 @@ const more: Record<string, MoreContent> = {
   ),
   AE2: M(
     [
-      'Model sentence: “Written in 1818, at a time of rapid scientific progress, Frankenstein reflects anxieties about the limits of human ambition.”',
+      'Model sentence: “Published in 1818, at a time of rapid scientific progress, Frankenstein reflects anxieties about the limits of human ambition.”',
       'Avoid simply listing biographical facts. Use context only when it helps explain the text’s choices and meanings.',
       'Consider how different audiences read a text: a colonial-era novel may be read today through a postcolonial lens, revealing assumptions its first readers accepted.',
       'Non-literary texts also have contexts: a public health poster from the 1980s AIDS crisis uses fear-based messaging that would be judged differently today.',
@@ -168,7 +168,7 @@ const more: Record<string, MoreContent> = {
     [
       'Hyperbole is deliberate exaggeration: “I’ve told you a million times.” Litotes is deliberate understatement using a negative: “not bad at all”.',
       'Antithesis puts contrasting ideas in balanced phrases: “It was the best of times, it was the worst of times.”',
-      'Semantic field is a group of words linked by meaning, like war imagery in a love poem, creating an extended metaphor.',
+      'Semantic field is a group of words linked by meaning, like war imagery in a love poem, which can build into an extended metaphor.',
       'Model analysis: “The semantic field of imprisonment, ‘caged’, ‘chained’, ‘locked’, presents marriage as a trap rather than a union.”',
     ],
     [

@@ -115,7 +115,7 @@ const more: Record<string, MoreContent> = {
       ['Defining variables', 'Say what each letter represents, with units.'],
       ['Rejecting solutions', 'Discard values that don’t fit the context, e.g. negatives.'],
       ['Box volume from a square sheet', 'V = x(L − 2x)².'],
-      ['GDC polynomial solver', 'Finds real roots of polynomial equations up to degree 4 or higher.'],
+      ['GDC polynomial solver', 'Finds the real roots of polynomial equations.'],
     ],
     [
       ['Coffee $3, muffins $2. 120 items for $310. Coffees sold', '70', ['50', '60', '80'], 'c + m = 120, 3c + 2m = 310.'],

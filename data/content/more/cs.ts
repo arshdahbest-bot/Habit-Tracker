@@ -29,7 +29,7 @@ const more: Record<string, MoreContent> = {
       'The TCP/IP model has four layers: application, like HTTP; transport, TCP or UDP; internet, IP addressing and routing; and network access, physical transmission.',
       'TCP is reliable, checking packets arrive in order and resending lost ones; UDP is faster but unreliable, suitable for live video and online games.',
       'DNS translates domain names like example.com into IP addresses. IPv4 addresses are 32 bits; IPv6 addresses are 128 bits because IPv4 addresses ran out.',
-      'Security: symmetric encryption uses one shared key; asymmetric encryption uses a public key to encrypt and a private key to decrypt, as in HTTPS.',
+      'Security: symmetric encryption uses one shared key; asymmetric encryption uses a public key to encrypt and a private key to decrypt. HTTPS uses asymmetric keys to agree a shared symmetric key, which then encrypts the data.',
     ],
     [
       ['TCP vs UDP', 'TCP: reliable, ordered. UDP: faster, no guarantee of delivery.'],
@@ -99,7 +99,7 @@ const more: Record<string, MoreContent> = {
     ],
     [
       ['After one pass of bubble sort on 5, 3, 8, 1 the list is…', '3, 5, 1, 8', ['1, 3, 5, 8', '3, 1, 5, 8', '5, 3, 1, 8'], 'The largest value bubbles to the end.'],
-      ['Binary search on 1,024 sorted items needs at most about…', '10 comparisons', ['1,024 comparisons', '512 comparisons', '100 comparisons'], 'log₂ 1024 = 10.'],
+      ['Binary search on 1,023 sorted items needs at most…', '10 comparisons', ['1,023 comparisons', '512 comparisons', '100 comparisons'], '1,023 = 2¹⁰ − 1, so 10 halvings are enough.'],
       ['A decision in a flowchart is drawn as a…', 'Diamond', ['Rectangle', 'Oval', 'Parallelogram'], 'It has yes/no branches.'],
       ['Which grows fastest as n increases?', 'O(n²)', ['O(n)', 'O(log n)', 'O(1)'], 'Quadratic time grows fastest here.'],
     ],
