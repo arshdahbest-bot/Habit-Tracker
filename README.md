@@ -141,3 +141,11 @@ connect a free **Supabase** database:
 5. Before submitting, write a **privacy policy** (the app uses the student's photo on the device only,
    and, if you enable Supabase, stores names and scores online). Apple asks for its URL. Because many IB students are under 18,
    keep data collection minimal.
+
+## Website version (free, works on iPhone)
+
+Every push to `main` builds the web version and publishes it at
+https://arshdahbest-bot.github.io/IBee/ using GitHub Pages (`.github/workflows/deploy-web.yml`).
+
+One-time setup: repo **Settings → Pages → Source: GitHub Actions**. On an iPhone, open the link in Safari
+and tap **Share → Add to Home Screen** to get an app icon.
