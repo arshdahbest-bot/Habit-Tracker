@@ -98,7 +98,7 @@ const more: Record<string, MoreContent> = {
       ['Most productive biome', 'Tropical rainforest (on land).'],
     ],
     [
-      ['Which pyramid can never be inverted?', 'Pyramid of energy', ['Pyramid of numbers', 'Pyramid of biomass in oceans', 'All can be inverted'], 'Energy is always lost between levels.'],
+      ['Which ecological pyramid is always pyramid-shaped?', 'Pyramid of energy', ['Pyramid of numbers', 'Pyramid of biomass in oceans', 'All can be inverted'], 'Energy is always lost between levels.'],
       ['Producers fix 20,000 kJ. Secondary consumers receive about…', '200 kJ', ['2,000 kJ', '20 kJ', '10,000 kJ'], '10% of 10%.'],
       ['DDT concentration being highest in eagles shows…', 'Biomagnification', ['Bioaccumulation only', 'Eutrophication', 'Succession'], 'Concentrations increase up the chain.'],
       ['Which has the lowest net primary productivity?', 'Desert', ['Tropical rainforest', 'Coral reef', 'Temperate forest'], 'Water limits growth.'],
@@ -360,7 +360,7 @@ const more: Record<string, MoreContent> = {
     [
       ['Pre-industrial CO₂ was about…', '280 ppm', ['420 ppm', '100 ppm', '1,000 ppm'], 'It is now above 420 ppm.'],
       ['Which surface has the highest albedo?', 'Fresh snow', ['Ocean', 'Forest', 'Asphalt'], 'It reflects most sunlight.'],
-      ['Weather occurs in the…', 'Troposphere', ['Stratosphere', 'Mesosphere', 'Thermosphere'], 'It holds most water vapour.'],
+      ['Clouds and rain form in which layer?', 'Troposphere', ['Stratosphere', 'Mesosphere', 'Thermosphere'], 'It holds most water vapour.'],
       ['Oxygen in the atmosphere originally came from…', 'Photosynthesis', ['Volcanoes', 'Comets', 'Respiration'], 'Cyanobacteria released oxygen.'],
     ],
   ),
@@ -541,7 +541,7 @@ const more: Record<string, MoreContent> = {
       ['Crop burning and inversions contribute to winter smog in…', 'Delhi', ['Reykjavik', 'Wellington', 'Oslo'], 'Smoke is trapped near the ground.'],
       ['Which pollutant is most harmful to lungs?', 'PM2.5', ['Nitrogen gas', 'Oxygen', 'Argon'], 'Fine particles penetrate deep into lungs.'],
       ['London’s ULEZ reduces pollution by…', 'Charging the most polluting vehicles', ['Banning bicycles', 'Closing parks', 'Building more roads'], 'It discourages dirty vehicles.'],
-      ['Ground-level ozone is a…', 'Secondary pollutant', ['Primary pollutant', 'Greenhouse-free gas', 'Particulate'], 'It forms from reactions in sunlight.'],
+      ['Ozone formed near the ground from NOₓ and sunlight is a…', 'Secondary pollutant', ['Primary pollutant', 'Greenhouse-free gas', 'Particulate'], 'It forms from reactions in sunlight.'],
     ],
   ),
   'HL.a': M(

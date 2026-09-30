@@ -115,7 +115,7 @@ const more: Record<string, MoreContent> = {
       ['Emissivity', 'Ratio of power emitted to that of a black body at the same temperature.'],
       ['Black body', 'Perfect absorber and emitter of radiation.'],
       ['Convection', 'Heat transfer by bulk movement of a fluid.'],
-      ['Wien’s law', 'λmax T = 2.9 × 10⁻³ m K.'],
+      ['Wien’s constant', '2.9 × 10⁻³ m K (λmax × T).'],
     ],
     [
       ['A star has peak wavelength 290 nm. Its surface temperature is about…', '10 000 K', ['1000 K', '5800 K', '290 K'], 'T = 2.9 × 10⁻³ ÷ 2.9 × 10⁻⁷.'],

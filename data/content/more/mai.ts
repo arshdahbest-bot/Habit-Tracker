@@ -632,7 +632,7 @@ const more: Record<string, MoreContent> = {
       'Interpretation: close to 1 means strong agreement in order; close to −1 means reversed order; near 0 means little association.',
     ],
     [
-      ['Tied ranks', 'Give each the average of the ranks they would occupy.'],
+      ['Ranks for 12, 15, 15, 18', '1, 2.5, 2.5, 4 — tied values share the average rank.'],
       ['Spearman = 1', 'Perfectly increasing (monotonic) relationship.'],
       ['Spearman = −1', 'Perfectly decreasing relationship.'],
       ['When to use Spearman', 'Ranked data or non-linear monotonic relationships.'],

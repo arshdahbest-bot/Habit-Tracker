@@ -175,7 +175,7 @@ const more: Record<string, MoreContent> = {
       ['Induction conclusion sentence', 'True for n = 1 and P(k) ⇒ P(k + 1), so true for all n ∈ ℤ⁺.'],
       ['Inductive hypothesis', 'Assuming the statement is true for n = k.'],
       ['Infinitely many primes proof', 'Classic proof by contradiction (Euclid).'],
-      ['Counterexample', 'A single example that shows a statement is false.'],
+      ['Proof by contradiction first step', 'Assume the opposite of what you want to prove.'],
     ],
     [
       ['In induction, assuming the statement is true for n = k is the…', 'Inductive hypothesis', ['Base case', 'Conclusion', 'Counterexample'], 'It is used to prove n = k + 1.'],
@@ -352,7 +352,7 @@ const more: Record<string, MoreContent> = {
       'Graphs of self-inverse functions are symmetric about y = x.',
     ],
     [
-      ['Oblique asymptote', 'A slanted line found by polynomial division.'],
+      ['Finding an oblique asymptote', 'Divide the polynomial; the quotient (without remainder) gives the asymptote.'],
       ['Test for even', 'f(−x) = f(x).'],
       ['Test for odd', 'f(−x) = −f(x).'],
       ['Self-inverse graph', 'Symmetric about y = x.'],
@@ -361,7 +361,7 @@ const more: Record<string, MoreContent> = {
       ['The oblique asymptote of (x² + 1)/(x − 1) is', 'y = x + 1', ['y = x', 'y = x − 1', 'x = 1'], 'Division gives x + 1 + 2/(x − 1).'],
       ['f(x) = x³ − x is', 'Odd', ['Even', 'Neither', 'Both'], 'f(−x) = −f(x).'],
       ['f(x) = cos x is', 'Even', ['Odd', 'Neither', 'Self-inverse'], 'cos(−x) = cos x.'],
-      ['Which is self-inverse?', '(x + 3)/(x − 1)', ['x + 3', '2x', 'x²'], 'Its inverse is the same function.'],
+      ['Which of these functions is self-inverse?', '(x + 3)/(x − 1)', ['x + 3', '2x', 'x²'], 'Its inverse is the same function.'],
     ],
   ),
   '2.15-2.16': M(
@@ -514,7 +514,7 @@ const more: Record<string, MoreContent> = {
     [
       ['Angle between vectors', 'cos θ = (a · b) ÷ (|a||b|).'],
       ['Vector AB', 'b − a.'],
-      ['Unit vector', 'v ÷ |v|.'],
+      ['Unit vector formula', 'v̂ = v ÷ |v|.'],
       ['Parallel vectors', 'One is a scalar multiple of the other.'],
     ],
     [
@@ -794,7 +794,7 @@ const more: Record<string, MoreContent> = {
     [
       ['∫ (ax + b)ⁿ dx', '(ax + b)ⁿ⁺¹ ÷ (a(n + 1)) + c.'],
       ['∫ eᵃˣ dx', 'eᵃˣ/a + c.'],
-      ['Area between curves', '∫ (upper − lower) dx between intersections.'],
+      ['Limits for area between curves', 'The x-coordinates of the intersection points.'],
       ['Constant of integration', 'Found from a known point on the curve.'],
     ],
     [

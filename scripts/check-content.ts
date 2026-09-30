@@ -65,7 +65,10 @@ for (const s of SUBJECTS) {
     }
   }
 }
-if (noMore.length) console.log(`${noMore.length} chapters have no second lesson yet`);
+if (noMore.length) {
+  console.log(`${noMore.length} chapters have no second lesson: ${noMore.slice(0, 10).join(', ')}${noMore.length > 10 ? '…' : ''}`);
+  problems += noMore.length;
+}
 console.log(`${totals.steps} lesson steps, ${totals.cards} flashcards, ${totals.quiz} quiz questions`);
 console.log(`${chapters} chapters checked, ${problems} problems`);
 process.exit(problems ? 1 : 0);
